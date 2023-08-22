@@ -57,8 +57,8 @@ list[tuple[&T,&T]] zipFill(list[&T] x, list[&T] y, &T fill)
 void ruleDifferences(Tree x, Tree y) {
   h3("Rule differences");
   
-  pX = { p | /Production p := x };
-  pY = { p | /Production p := y };
+  pX = { p | /Production p := x, !(p.def is lit), !(p.def is cilit), !(p is regular)};
+  pY = { p | /Production p := y, !(p.def is lit), !(p.def is cilit), !(p is regular)};
   
   if (pX == pY) {
     paragraph("The alternatives use the same rules.");
