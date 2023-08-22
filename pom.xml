@@ -54,14 +54,14 @@
 				</configuration>
 				<executions>
 					<execution>
-						<id>flybytes-compile</id>
+						<id>dramb-compile</id>
 						<phase>compile</phase>
 						<goals>
 							<goal>compile</goal>
 						</goals>
 					</execution>
 					<execution>
-						<id>flybytes-package</id>
+						<id>dramb-package</id>
 						<phase>pre-package</phase>
 						<goals>
 							<goal>package</goal>
