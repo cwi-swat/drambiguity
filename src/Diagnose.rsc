@@ -74,7 +74,7 @@ void ruleDifferences(Tree x, Tree y) {
           });
         });
         tbody(() {
-          for (<p,q> <- zipFill([topProd2rascal(e) | e <- sort(pX - pY)], [topProd2rascal(e) | e <- sort(pY - pX)], "")) {
+          for (<p,q> <- zipFill([format(e) | e <- sort(pX - pY)], [format(e) | e <- sort(pY - pX)], "")) {
             tr(() {
               td(() {
                 if (p != "")
@@ -109,10 +109,10 @@ void ruleDifferences(Tree x, Tree y) {
         tbody(() {
           tr(() {
             td(() {
-              pre(() { code(topProd2rascal(prodX)); });
+              pre(() { code(format(prodX)); });
             });
             td(() {
-              pre(() { code(topProd2rascal(prodY)); });
+              pre(() { code(format(prodY)); });
             });
           });       
         }); 
@@ -284,10 +284,10 @@ void tokens(Tree x, Tree y) {
            text(symbol2rascal(l));
          });
          td(() {
-           text(topProd2rascal(ppX));
+           text(format(ppX));
          });
          td(() {
-           text(topProd2rascal(ppY));
+           text(format(ppY));
          });
        });
      }
@@ -348,7 +348,7 @@ void tokens(Tree x, Tree y) {
        ul(class("list-unstyled"), () {
          for (f <- follows) {
            li(() {
-              pre(() { code(topProd2rascal(f)); } );
+              pre(() { code(format(f)); } );
            });
          }
        });
@@ -394,7 +394,7 @@ void tokens(Tree x, Tree y) {
        ul(class("list-unstyled"), () {
          for (f <- preceeds) {
            li(() {
-              pre(() { code(topProd2rascal(f)); });
+              pre(() { code(format(f)); });
            });
          }
        });
@@ -419,14 +419,14 @@ str exceptAdvise(Tree x, Tree y, set[Production] pX, set[Production] pY) {
       }
       else {
         result += "ADVISORY: provide a label for: 
-                  '  <topProd2rascal(apX[def=label(labelApX, apX.def)])>
+                  '  <format(apX[def=label(labelApX, apX.def)])>
                   '";
       }
        
       result += "To fix this ambiguity, you could consider restricting the nesting of
-                '  <topProd2rascal(apX)>
+                '  <format(apX)>
                 'under
-                '  <topProd2rascal(p)>
+                '  <format(p)>
                 'using the ! operator on argument <i/2>: !<labelApX>
                 'However, you should realize that you are introducing a restriction that makes the language smaller.
                 '
@@ -437,6 +437,8 @@ str exceptAdvise(Tree x, Tree y, set[Production] pX, set[Production] pY) {
   return result;
 }
 
+@memo
+str format(Production p) = topProd2rascal(p);
 
 str danglingCauses(Tree x, Tree y) {
   if (appl(p,/appl(q,_)) := x, appl(q,/appl(p,_)) := y) {
@@ -449,13 +451,13 @@ str danglingCauses(Tree x, Tree y) {
 str danglingFollowSolutions(Tree x, Tree y) {
   if (prod(_, lhs, _) := x.prod, prod(_, [pref*, _, l:lit(_), more*], _) := y.prod, lhs == pref) {
     return "To fix this ambiguity you might add a follow restriction for <symbol2rascal(l)> on:
-           '   <topProd2rascal(x.prod)> (<x.prod>)
+           '   <format(x.prod)> (<x.prod>)
            "; 
   }
   
   if (prod(_, lhs, _) := y.prod, prod(_, [pref*, _, l:lit(_), more*], _) := x.prod, lhs == pref) {
     return "To fix this ambiguity you might add a follow restriction for <symbol2rascal(l)> on:
-           '  <topProd2rascal(y.prod)>
+           '  <format(y.prod)>
            "; 
   }
   
@@ -466,7 +468,7 @@ void rules(list[Production] rs) {
   ul(class("list-unstyled"), () {
     for (r <- rs) {
       li(() {
-        pre(() { code(topProd2rascal(r)); });
+        pre(() { code(format(r)); });
       });
     }
   });

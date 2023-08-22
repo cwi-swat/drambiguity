@@ -73,16 +73,19 @@ App[Model] drAmbiguity(Model m, str id="DrAmbiguity")
       root
     );
 
+@memo
+&T cache(&T t) = t;
+
 data Model 
   = model(type[Tree] grammar,
       str input = "",
       Maybe[Tree] tree = saveParse(grammar, input),
       Maybe[loc] file = just(|home:///myproject.dra|),
       bool inputDirty = false,
-      str grammarText = trim(grammar2rascal(Grammar::grammar({}, grammar.definitions))),
+      str grammarText = cache(trim(grammar2rascal(Grammar::grammar({}, grammar.definitions)))),
       bool grammarDirty = false,
       str commitMessage = "",
-      lrel[datetime stamp, str msg, str grammar] grammarHistory = [<now(), "original", trim(grammar2rascal(Grammar::grammar({}, grammar.definitions)))>],
+      lrel[datetime stamp, str msg, str grammar] grammarHistory = [<now(), "initial", grammarText>],
       lrel[str input, Symbol nt, Maybe[Tree] tree, str status]  examples = [],
       int generateAmount = 5, 
       list[str] errors = [],
@@ -293,9 +296,15 @@ Model freshSentences(Model m) {
     
     return m;
   }
-  
-  m.errors += ["no ambiguous sentences found\n"];
-  return m;
+  else {
+    Tree n = randomTree(completeGrammar(m.grammar));
+    m.input = "<n>";
+    m.tree = just(n);
+    m.inputDirty = true;
+    m.errors += ["no ambiguous sentences found; current input is randomly selected."];
+
+    return m;
+  }
 }
 
 void graphic(Model m) {
@@ -409,10 +418,10 @@ void grammarPane(Model m) {
   row(() {
     column(10, md(), () {
       if (m.grammarDirty) {
-        textarea(class("form-control"), style(<"width","100%">), rows(25), onInput(onNewGrammarInput), \value(m.grammarText));
+        textarea(class("form-control"), style(<"width","100%">), rows(25), onChange(onNewGrammarInput), \value(m.grammarText));
       }
       else {
-        textarea(class("form-control"), style(<"width","100%">), rows(25), onInput(onNewGrammarInput), \value(m.grammarText));
+        textarea(class("form-control"), style(<"width","100%">), rows(25), onChange(onNewGrammarInput), \value(m.grammarText));
       }
     });
     column(2, md(), () {
@@ -508,10 +517,10 @@ void inputPane(Model m) {
    row(() {
           column(10, md(), () {
              if (m.inputDirty) {
-               textarea(class("form-control"), style(<"width","100%">), rows(10), onInput(onNewSentenceInput), \value(sentence));
+               textarea(class("form-control"), style(<"width","100%">), rows(10), onChange(onNewSentenceInput), \value(sentence));
              }
              else {
-               textarea(class("form-control"), style(<"width","100%">), rows(10), onInput(onNewSentenceInput));
+               textarea(class("form-control"), style(<"width","100%">), rows(10), onChange(onNewSentenceInput));
              } 
           });    
           column(2, md(), () {
