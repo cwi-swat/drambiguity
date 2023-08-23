@@ -6,6 +6,7 @@ import Node;
 import lang::rascal::grammar::definition::Regular;
 import lang::rascal::format::Grammar;
 import util::Maybe;
+import String;
 
 Symbol delabel(label(str _, Symbol s)) = delabel(s);
 Symbol delabel(conditional(Symbol s, set[Condition] _)) = delabel(s);
@@ -141,3 +142,6 @@ str format(Symbol s) = symbol2rascal(s);
 
 @memo
 str format(Production p) = topProd2rascal(p);
+
+@memo
+str format(type[Tree] grammar) = trim(grammar2rascal(Grammar::grammar({}, grammar.definitions)));

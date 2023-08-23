@@ -78,20 +78,17 @@ data Model
       str input = "",
       Maybe[Tree] tree = saveParse(grammar, input),
       Maybe[loc] file = just(|home:///myproject.dra|),
-      str grammarText = grammarText(grammar),
+      str grammarText = format(grammar),
       str commitMessage = "",
       lrel[datetime stamp, str msg, str grammar] grammarHistory = [<now(), "initial", grammarText>],
       lrel[str input, Symbol nt, Maybe[Tree] tree, str status]  examples = [],
-      int generateAmount = 5, 
+      int generationEffort = 5, 
       list[str] errors = [],
       bool labels = false, 
       bool literals = false,
       bool \layout = false,
       bool chars = true
     );
-
-@memo
-str grammarText(type[Tree] grammar) = trim(grammar2rascal(Grammar::grammar({}, grammar.definitions)));
 
 data Msg 
    = labels()
@@ -104,7 +101,7 @@ data Msg
    | newInput(str x)
    | selectExample(int count)
    | removeExample(int count)
-   | generateAmount(int count)
+   | changeGenerationEffort(int count)
    | storeInput()
    | newGrammar(str x)
    | commitGrammar(int selector)
@@ -158,7 +155,7 @@ Model update(selectExample(int count), Model m) {
 }
 
 Model update(removeExample(int count), Model m) = m[examples = m.examples[0..count-1] + m.examples[count..]];
-Model update(generateAmount(int count), Model m) = m[generateAmount = count > 0 && count < 101 ? count : m.generateAmount];
+Model update(changeGenerationEffort(int count), Model m) = m[generationEffort = count > 0 && count < 101 ? count : m.generationEffort];
 Model update(newGrammar(str x), Model m) {
   m.grammarText=x;
   return m;
@@ -260,7 +257,7 @@ Model update(Msg::simplify(), Model m) {
   saved = m.input;
 
   gr = type(symbol(m.tree.val), m.grammar.definitions);
-  m.tree=just(completeLocs(reparse(gr, simplify(gr, m.tree.val, effort=m.generateAmount * 100))));
+  m.tree=just(completeLocs(reparse(gr, simplify(gr, m.tree.val, effort=m.generationEffort * 100))));
   m.input = "<m.tree.val>";
 
   if (m.input == saved) {
@@ -273,7 +270,7 @@ Model update(Msg::simplify(), Model m) {
 Model update(Msg::freshSentence(), Model m) = freshSentences(m);
 
 Model freshSentences(Model m) {
-  if (options:{_,*_} := randomAmbiguousSubTrees(m.grammar, m.generateAmount)) {
+  if (options:{_,*_} := randomAmbiguousSubTrees(m.grammar, m.generationEffort)) {
     new = m.examples == [] ? [*options] : [op | op <- options, !any(e <- m.examples, just(op) := e.tree)];
     if (new != []) {
       m.examples += [<"<n>", Util::symbol(n), just(completeLocs(n)), status(just(n))> | n <- new];
@@ -468,7 +465,7 @@ void grammarPane(Model m) {
 }
 
 Msg newAmountInput(int i) {
-  return generateAmount(i);
+  return changeGenerationEffort(i);
 }
 
 Msg loadProjectInput(str file) {
@@ -532,7 +529,7 @@ void inputPane(Model m) {
                 button(class("list-group-item"), onClick(simplify()), "Simplify");
               }
               button(class("list-group-item"), onClick(freshSentence()), "Generate");
-              input(class("list-group-item"), \type("range"), \value("5"), min("1"), max("100"), onInput(newAmountInput));
+              input(class("list-group-item"), \type("range"), \value("<m.generationEffort>"), min("1"), max("100"), onChange(newAmountInput));
               div(class("list-group-item"), class("dropdown"),  () {
                 button(class("btn"), class("btn-secondary"), class("dropdown-toggle"), \type("button"), id("nonterminalChoice"), dropdown(), hasPopup(true), expanded(false), 
                   "Start: <format(m.grammar.symbol)>");
