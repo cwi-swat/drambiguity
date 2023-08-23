@@ -437,9 +437,6 @@ str exceptAdvise(Tree x, Tree y, set[Production] pX, set[Production] pY) {
   return result;
 }
 
-@memo
-str format(Production p) = topProd2rascal(p);
-
 str danglingCauses(Tree x, Tree y) {
   if (appl(p,/appl(q,_)) := x, appl(q,/appl(p,_)) := y) {
     return danglingFollowSolutions(x, y);

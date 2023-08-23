@@ -73,17 +73,12 @@ App[Model] drAmbiguity(Model m, str id="DrAmbiguity")
       root
     );
 
-@memo
-&T cache(&T t) = t;
-
 data Model 
   = model(type[Tree] grammar,
       str input = "",
       Maybe[Tree] tree = saveParse(grammar, input),
       Maybe[loc] file = just(|home:///myproject.dra|),
-      bool inputDirty = false,
-      str grammarText = cache(trim(grammar2rascal(Grammar::grammar({}, grammar.definitions)))),
-      bool grammarDirty = false,
+      str grammarText = grammarText(grammar),
       str commitMessage = "",
       lrel[datetime stamp, str msg, str grammar] grammarHistory = [<now(), "initial", grammarText>],
       lrel[str input, Symbol nt, Maybe[Tree] tree, str status]  examples = [],
@@ -94,7 +89,10 @@ data Model
       bool \layout = false,
       bool chars = true
     );
- 
+
+@memo
+str grammarText(type[Tree] grammar) = trim(grammar2rascal(Grammar::grammar({}, grammar.definitions)));
+
 data Msg 
    = labels()
    | literals()
@@ -153,7 +151,6 @@ Model update(selectExample(int count), Model m) {
   // println("new tree: <m.tree>");
   m.grammar = type[Tree] ng := type(m.examples[count-1].nt, m.grammar.definitions) ? ng : m.grammar;
   m.input = m.examples[count-1].input;
-  m.inputDirty = true;
   if (m.tree == nothing()) {
     m.errors += ["input sentence has parse error"];
   }
@@ -164,7 +161,6 @@ Model update(removeExample(int count), Model m) = m[examples = m.examples[0..cou
 Model update(generateAmount(int count), Model m) = m[generateAmount = count > 0 && count < 101 ? count : m.generateAmount];
 Model update(newGrammar(str x), Model m) {
   m.grammarText=x;
-  m.grammarDirty=false;
   return m;
 }
 
@@ -180,7 +176,6 @@ Model update(setStartNonterminal(Symbol s), Model m) {
     
     try {
       m.tree = just(reparse(m.grammar, m.input));
-      m.inputDirty = false;
       m.errors = [];
     }
     catch ParseError (l) : {
@@ -204,12 +199,10 @@ Model update(Msg::commitGrammar(int selector), Model m) {
     if (selector == -1) {
       m.grammarHistory = [<now(), m.commitMessage, m.grammarText>] + m.grammarHistory;
       newGrammar = m.grammarText;
-      m.grammarDirty = false;
     }
     else {
       newGrammar = m.grammarHistory[selector-1].grammar;
       m.grammarText = m.grammarHistory[selector-1].grammar;
-      m.grammarDirty = true;
     }
     
     m.commitMessage = "";
@@ -254,12 +247,10 @@ Model update(newInput(str new), Model m) {
     m.input = new;
     m.tree = saveParse(m.grammar, new);
     m.errors = [];
-    m.inputDirty = false;
   }
   catch ParseError(l) : {
     m.errors += ["parse error in input at <l>"];
     m.tree = nothing();
-    m.inputDirty = false;
   }
   
   return m;
@@ -271,12 +262,10 @@ Model update(Msg::simplify(), Model m) {
   gr = type(symbol(m.tree.val), m.grammar.definitions);
   m.tree=just(completeLocs(reparse(gr, simplify(gr, m.tree.val, effort=m.generateAmount * 100))));
   m.input = "<m.tree.val>";
-  m.inputDirty = m.input != saved;
 
-  if (!m.inputDirty) {
+  if (m.input == saved) {
     m.errors += ["no simpler example found"]; 
   }
-
   
   return m;
 }
@@ -298,10 +287,13 @@ Model freshSentences(Model m) {
   }
   else {
     Tree n = randomTree(completeGrammar(m.grammar));
-    m.input = "<n>";
-    m.tree = just(n);
-    m.inputDirty = true;
-    m.errors += ["no ambiguous sentences found; current input is randomly selected."];
+
+    if (m.input == "") {
+      m.input = "<n>";
+      m.tree = just(n);
+    }
+    
+    m.errors += ["no ambiguous sentences found"];
 
     return m;
   }
@@ -310,33 +302,40 @@ Model freshSentences(Model m) {
 void graphic(Model m) {
   // for lack of a visual, here we use ascii art:
    if (m.tree is just) {
-      if (amb(alts) := m.tree.val) {
-        table(class("table"), class("table-hover"), class("table-sm"), () {
-          thead(() {
-            for (_ <- alts) {
-              th(attr("scope", "col"), () {
-                text("Alternative");
-              });
-            }
-          });
-          tbody(() {
-            tr(() {
-              for (Tree t <- alts) {
-                td(() {
-                  pre(() {
-                    text(prettyTree(t, characters = m.chars, literals=m.literals, \layout=m.\layout));
-                  });
+      table(class("table"), class("table-hover"), class("table-sm"), () {
+        if (amb(alts) := m.tree.val) {  
+            thead(() {
+              for (_ <- alts) {
+                th(attr("scope", "col"), () {
+                  text("Alternative");
                 });
               }
-            });       
-          }); 
-        });
-      }
-      else {
-        pre(() {
-          text(prettyTree(m.tree.val, characters = m.chars, literals=m.literals, \layout=m.\layout));
-        });
-      }
+            });
+            tbody(() {
+              tr(() {
+                for (Tree t <- alts) {
+                  td(() {
+                    pre(() {
+                      text(prettyTree(t, characters = m.chars, literals=m.literals, \layout=m.\layout));
+                    });
+                  });
+                }
+              });       
+            }); 
+        }
+        else {
+          thead(() {
+            th(attr("scope", "col"), () {
+              text("Tree");
+            });
+          });
+          tbody(() {
+            pre(() {
+              text(prettyTree(m.tree.val, characters = m.chars, literals=m.literals, \layout=m.\layout));
+            });
+          });
+        }
+      });
    }
 }
  
@@ -417,15 +416,10 @@ Msg onCommitMessageInput(str m) {
 void grammarPane(Model m) {
   row(() {
     column(10, md(), () {
-      if (m.grammarDirty) {
         textarea(class("form-control"), style(<"width","100%">), rows(25), onChange(onNewGrammarInput), \value(m.grammarText));
-      }
-      else {
-        textarea(class("form-control"), style(<"width","100%">), rows(25), onChange(onNewGrammarInput), \value(m.grammarText));
-      }
     });
     column(2, md(), () {
-      input(class("list-group-item"), style(<"width","100%">), \type("text"), onInput(onCommitMessageInput), \value(m.commitMessage));
+      input(class("list-group-item"), style(<"width","100%">), \type("text"), onChange(onCommitMessageInput), \value(m.commitMessage));
       if (trim(m.commitMessage) != "") {
         button(class("list-group-item"), onClick(commitGrammar(-1)), "Commit");
       }
@@ -516,21 +510,16 @@ void inputPane(Model m) {
    
    row(() {
           column(10, md(), () {
-             if (m.inputDirty) {
-               textarea(class("form-control"), style(<"width","100%">), rows(10), onChange(onNewSentenceInput), \value(sentence));
-             }
-             else {
-               textarea(class("form-control"), style(<"width","100%">), rows(10), onChange(onNewSentenceInput));
-             } 
+            textarea(class("form-control"), style(<"width","100%">), rows(10), onChange(onNewSentenceInput), \value(sentence), sentence); 
           });    
           column(2, md(), () {
             div(class("list-group list-group-flush"), style(<"list-style-type","none">), () {
               span(class("list-group-item"), () {
                 if (isError) {
-                  alertInfo("This sentence is not a <m.grammar>; it has a parse error");
+                  alertInfo("This <if (m.input == "") {>empty <}>sentence is grammatically not in <m.grammar>.");
                 } 
                 else {
-                  alertInfo("This sentence is <if (!isAmb) {>not<}> ambiguous, and it has<if (!nestedAmb) {> no<}> nested ambiguity.");
+                  alertInfo("This grammatically correct sentence is <if (!isAmb) {>not<}> ambiguous, and it has<if (!nestedAmb) {> no<}> nested ambiguity.");
                 }
               });
               if (nestedAmb) {          
@@ -546,10 +535,10 @@ void inputPane(Model m) {
               input(class("list-group-item"), \type("range"), \value("5"), min("1"), max("100"), onInput(newAmountInput));
               div(class("list-group-item"), class("dropdown"),  () {
                 button(class("btn"), class("btn-secondary"), class("dropdown-toggle"), \type("button"), id("nonterminalChoice"), dropdown(), hasPopup(true), expanded(false), 
-                  "Start: <symbol2rascal(m.grammar.symbol)>");
+                  "Start: <format(m.grammar.symbol)>");
                 div(class("dropdown-menu"), labeledBy("nonterminalChoice"), () {
                     for (Symbol x <- sorts(m.grammar)) {
-                        button(class("list-group-item"), href("#"), onClick(setStartNonterminal(x)),  "<symbol2rascal(x)>");
+                        button(class("list-group-item"), href("#"), onClick(setStartNonterminal(x)),  "<format(x)>");
                     }
                 });
               });
@@ -584,7 +573,7 @@ void inputPane(Model m) {
                     tr( () {
                       count += 1;
                       td("<count>");
-                      td("<symbol2rascal(exs)>");
+                      td("<format(exs)>");
                       td(() {
                         pre(() { code(inp); });
                       });
@@ -653,17 +642,16 @@ Model focus(Model m) {
     if (ambs != []) {
       m.tree = just(ambs[arbInt(size(ambs))]);
       m.input = "<m.tree.val>";
-      m.inputDirty = true;
     }
   }
   
   return m;
 }
  
-str prodlabel(regular(Symbol s)) = symbol2rascal(s);
+str prodlabel(regular(Symbol s)) = format(s);
 str prodlabel(prod(label(str x,_),_,_)) = x;
 str prodlabel(prod(_, list[Symbol] args:[*_,lit(_),*_],_)) = "<for (lit(x) <- args) {><x> <}>";
-default str prodlabel(prod(Symbol s, _,_ )) = symbol2rascal(s);
+default str prodlabel(prod(Symbol s, _,_ )) = format(s);
 
 
 

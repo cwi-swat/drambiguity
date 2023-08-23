@@ -4,6 +4,7 @@ import ParseTree;
 import Grammar; 
 import Node;
 import lang::rascal::grammar::definition::Regular;
+import lang::rascal::format::Grammar;
 import util::Maybe;
 
 Symbol delabel(label(str _, Symbol s)) = delabel(s);
@@ -134,3 +135,9 @@ Tree shared(Tree t) {
       }
    }
 }
+
+@memo
+str format(Symbol s) = symbol2rascal(s);
+
+@memo
+str format(Production p) = topProd2rascal(p);
