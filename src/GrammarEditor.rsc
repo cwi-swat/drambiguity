@@ -1,4 +1,4 @@
-//@bootstrapParser
+@bootstrapParser
 module GrammarEditor
 
 import lang::rascal::grammar::definition::Modules;
