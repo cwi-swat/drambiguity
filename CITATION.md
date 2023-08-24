@@ -38,14 +38,15 @@ Which automated the manual instructions found here:
 
 The ambiguity detection algorithm -via random tree generation- is a port in Rascal of the method published
 by our colleagues in this paper:
-```
+
+```bibtex
 @inproceedings{10.1007/978-3-319-02654-1_9,
-	address = {Cham},
-	author = {Vasudevan, Naveneetha and Tratt, Laurence},
-	booktitle = {Software Language Engineering},
-	editor = {Erwig, Martin and Paige, Richard F. and Van Wyk, Eric},
-	pages = {157--176},
-	publisher = {Springer International Publishing},
-	title = {Detecting Ambiguity in Programming Language Grammars},
-	year = {2013}}
+  author = {Vasudevan, Naveneetha and Tratt, Laurence},
+  booktitle = {Software Language Engineering},
+  editor = {Erwig, Martin and Paige, Richard F. and Van Wyk, Eric},
+  pages = {157--176},
+  publisher = {Springer International Publishing},
+  title = {Detecting Ambiguity in Programming Language Grammars},
+  year = {2013}
+}
 ```
