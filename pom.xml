@@ -45,14 +45,15 @@
 			<plugin>
 				<groupId>org.rascalmpl</groupId>
 				<artifactId>rascal-maven-plugin</artifactId>
-				<version>0.19.8</version>
+				<version>0.20.0-RC1</version>
                                 <configuration>
+                                    <errorsAsWarnings>true</errorsAsWarnings>
                                     <enableStandardLibrary>false</enableStandardLibrary>
-					<bin>${project.build.outputDirectory}</bin>
-					<srcs>
-						<src>${project.basedir}/src</src>
-					</srcs>
-				</configuration>
+                                    <bin>${project.build.outputDirectory}</bin>
+                                    <srcs>
+                                        <src>${project.basedir}/src</src>
+                                    </srcs>
+                                </configuration>
 				<executions>
 					<execution>
 						<id>dramb-compile</id>

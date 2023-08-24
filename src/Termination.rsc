@@ -33,7 +33,7 @@ is uniform.
 }
 Grammar terminationWeights(Grammar g) { 
    deps = dependencies(g.rules);
-   weights = ();
+   map[Production, int] weights = ();
    recProds = {p | /p:prod(s,[*_,t,*_],_) := g, <delabel(t), delabel(s)> in deps};
    
    for (nt <- g.rules) {
@@ -57,4 +57,4 @@ Grammar terminationWeights(Grammar g) {
 @memo 
 @synopsis{Extracts which non-terminal depends on which others}
 rel[Symbol,Symbol] dependencies(map[Symbol, Production] gr) 
-  = {<delabel(from),delabel(to)> | /prod(Symbol from,[_*,Symbol to,_*],_) := gr}+;
+  = {<delabel(from),delabel(to)> | /prod(Symbol from,[*_, Symbol to, *_],_) := gr}+;

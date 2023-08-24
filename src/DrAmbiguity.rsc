@@ -73,6 +73,9 @@ App[Model] drAmbiguity(Model m, str id="DrAmbiguity")
       root
     );
 
+Model model(&T<:Tree input, type[Tree] grammar) 
+  = model(grammar)[tree=just(input)];
+
 data Model 
   = model(type[Tree] grammar,
       str input = "",
@@ -215,17 +218,17 @@ Model update(Msg::commitGrammar(int selector), Model m) {
       m.errors += ["parse error in input at <l>"];
     }
     catch value v: {
-      m.error += ["unexpected error: <v>"];
+      m.errors += ["unexpected error: <v>"];
       m.tree = nothing();
     }
     
     // and reparse the examples
-    m.examples = for (<str ex, Symbol s, Maybe[Tree] t, str st> <- m.examples) {
+    m.examples = for (<str ex, Symbol s, Maybe[Tree] t, str _st> <- m.examples) {
       try {
-        t = reparse(m.grammar, s, ex);
-        append <ex, s, just(t), status(just(t))>;
+        tt = reparse(m.grammar, s, ex);
+        append <ex, s, just(tt), status(just(t))>;
       }
-      catch ParseError(e) :
+      catch ParseError(_e) :
         append <ex, s, nothing(), status(nothing())>;
       catch value v: {
         append <ex, s, nothing(), status(nothing())>;
@@ -444,7 +447,7 @@ void grammarPane(Model m) {
                 });
                 tbody(() {
                   int count = 1;
-                  for (<datetime stamp, str msg, str grammar> <- m.grammarHistory) {
+                  for (<datetime stamp, str msg, str _grammar> <- m.grammarHistory) {
                     tr( () {
                       td(printDateTime(stamp, "dd-MM-yyyy HH:mm:ss"));
                       td(msg);
@@ -565,7 +568,7 @@ void inputPane(Model m) {
                 });
                 tbody(() {
                   int count = 0;
-                  for (<inp, exs, t, st> <- m.examples) {
+                  for (<inp, exs, _t, st> <- m.examples) {
                     
                     tr( () {
                       count += 1;

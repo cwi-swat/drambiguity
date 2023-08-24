@@ -65,8 +65,8 @@ Maybe[Tree] saveParse(type[Tree] grammar, str input) {
       return just(wrapped ? completeLocs(result.args[0]) : completeLocs(result));
     }        
   }
-  catch ParseError(l) : ;
-  catch value x : ;
+  catch ParseError(_) : ;
+  catch value _ : ;
 
   return nothing();
 }
@@ -75,20 +75,20 @@ bool isChar(char(_)) = true;
 default bool isChar(Tree _) = false;
 
 bool isLayout(appl(prod(layouts(_),_,_),_)) = true;
-bool isLayout(appl(prod(label(layouts(_),_),_,_),_)) = true;
+bool isLayout(appl(prod(label(_, layouts(_)),_,_),_)) = true;
 default bool isLayout(Tree _) = false;
 
 bool isLiteral(appl(prod(lit(_),_,_),_)) = true;
 default bool isLiteral(Tree _) = false;
 
-anno int Tree@unique;
-Tree unique(Tree t) {
-   int secret = 0;
-   int unique() { secret += 1; return secret; };
-   return visit(t) { 
-     case Tree x => x[@unique=unique()] 
-   };
-}  
+// anno int Tree@unique;
+// Tree unique(Tree t) {
+//    int secret = 0;
+//    int unique() { secret += 1; return secret; };
+//    return visit(t) { 
+//      case Tree x => x[@unique=unique()] 
+//    };
+// }  
 
 Tree completeLocs(Tree t:amb({Tree u,*_})) = nt when u@\loc?, <nt, _> := completeLocs(t, u@\loc.top, 0);
 Tree completeLocs(Tree t:amb({Tree u,*_})) = nt when !(u@\loc?), <nt, _> := completeLocs(t, |unknown:///|(0,0), 0);
@@ -116,26 +116,28 @@ tuple[Tree, int] completeLocs(Tree t, loc parent, int offset) {
     case cycle(_, _) : {
       return <t[@\loc=t@\loc?parent], offset>;
     }
+    default:
+      throw "unexected kind of tree <t>";
   } 
 }
 
 set[Symbol] sorts(type[&T <: Tree] grammar)
   = { delabel(s) | /Symbol s := grammar.definitions, isRegular(s) || s is lex || s is sort, !(s is empty)};
    
-Tree shared(Tree t) {
-   done = {};
+// Tree shared(Tree t) {
+//    done = {};
    
-   return visit(t) {
-     case Tree a : {
-        if (<a, l, u> <- done, l == a@\loc) {
-          insert a[@unique=u];
-        }
-        else {
-          done += <a, a@\loc, a@unique>;
-        }
-      }
-   }
-}
+//    return visit(t) {
+//      case Tree a : {
+//         if (<a, l, u> <- done, l == a@\loc) {
+//           insert a[@unique=u];
+//         }
+//         else {
+//           done += <a, a@\loc, a@unique>;
+//         }
+//       }
+//    }
+// }
 
 @memo
 str format(Symbol s) = symbol2rascal(s);

@@ -12,7 +12,7 @@ import IO;
 Tree simplify(type[Tree] gr, Tree t, int effort=100) {
    work = effort;
 
-   for (int i <- [0..effort]) {
+   for (int _i <- [0..effort]) {
      new = simplify(t);
      if (new != t && isAmbiguous(gr, new)) {
        return new;
@@ -57,7 +57,7 @@ Tree simplify(Tree t) {
      }
    
      // remove elements from star separated lists
-     case a:appl(r:regular(\iter-star-seps(_,seps)),args:![]) : {
+     case a:appl(r:regular(\iter-star-seps(_,seps)), list[Tree] args:![]) : {
        delta = size(seps) + 1;
        rand = arbInt(size(args)) mod delta;
 
@@ -69,7 +69,7 @@ Tree simplify(Tree t) {
      }
      
      // removes elements from non-nullable lists
-     case a:appl(r:regular(\iter(_)),args:![_]) : {
+     case a:appl(r:regular(\iter(_)), list[Tree] args:![_]) : {
        rand = arbInt(size(args));
 
        if (arbBool()) {
@@ -80,7 +80,7 @@ Tree simplify(Tree t) {
      }
      
      // removes elements from nullable lists
-     case a:appl(r:regular(\iter-star(_)),args:![]) : {
+     case a:appl(r:regular(\iter-star(_)), list[Tree] args:![]) : {
        if (arbBool()) {
           return appl(r, []);
        }
@@ -99,7 +99,7 @@ Tree simplify(Tree t) {
        }
          
      // removes direct recursion
-     case a:appl(prod(p,_,_),[*_,b:appl(prod(q,_,_),_),*_]) : {
+     case appl(prod(p,_,_),[*_,b:appl(prod(q,_,_),_),*_]) : {
        if (arbBool()) {
          fail; // skip to another match
        } else if (delabel(p) == delabel(q)) {
@@ -110,7 +110,7 @@ Tree simplify(Tree t) {
      }
      
      // removes indirect recursion (one level removed)
-     case a:appl(prod(p,_,_),[*_,appl(_,[*_,b:appl(prod(q,_,_),_),*_]),*_]) : {
+     case appl(prod(p,_,_),[*_,appl(_,[*_,b:appl(prod(q,_,_),_),*_]),*_]) : {
        if (arbBool()) {
          fail; // skip to another match
        } else if (delabel(p) == delabel(q)) {
@@ -133,7 +133,7 @@ Tree simplify(Tree t) {
      }
      
      // pick an ambiguous alternative, arbitrarily, not randomly
-     case a:amb(alts) : {
+     case amb(alts) : {
        return getOneFrom(alts);
      }
    };

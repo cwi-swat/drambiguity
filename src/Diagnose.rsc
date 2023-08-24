@@ -9,13 +9,13 @@ import lang::rascal::format::Grammar;
 import salix::HTML;
 import salix::Node;
 import salix::lib::Bootstrap;
-import IO;
+// import IO;
 
 void diagnose(Tree t:amb(_)) = findCauses(t);
                               
 default void diagnose(Tree _) = paragraph("This tree is not ambiguous at the top. Diagnostics are not enabled.");
 
-void findCauses(Tree t:amb(set[Tree] alts)) {
+void findCauses(amb(set[Tree] alts)) {
   if (size(alts) > 2) {
     p(() {
       text("This ambiguity cluster has <size(alts)> alternatives. Each possible combination of two alternatives are analyzed for differences below.");
@@ -164,7 +164,7 @@ alias Word = tuple[loc pos, Symbol cat, str word];
 alias Words = set[Word];
 
 void tokens(Tree x, Tree y) {
-  bool isWord(Tree t)  = s is \lex || s is \lit || s is \cilit || s is \layout when s := Util::symbol(t);
+  bool isWord(Tree t)  = s is \lex || s is \lit || s is \cilit || s is \layouts when s := Util::symbol(t);
    
   Words collect(Tree t) = {<n@\loc, symbol(n), "<n>"> | /n:appl(_,_) := t, isWord(n)};
   
@@ -231,8 +231,8 @@ void tokens(Tree x, Tree y) {
  Words lexX = {t | t <- wordsX, lex(_) := t.cat};
  Words lexY = {t | t <- wordsY, lex(_) := t.cat};
  
- litParentsX = {<p,l> | /t:appl(p,[_*,l:appl(prod(l,_,_),_),_*]) := x, lit(_) := l || cilit(_) := l};
- litParentsY = {<p,l> | /t:appl(p,[_*,l:appl(prod(l,_,_),_),_*]) := y, lit(_) := l || cilit(_) := l};
+ litParentsX = {<p,l> | /t:appl(p,[*_,l:appl(prod(l,_,_),_),*_]) := x, lit(_) := l || cilit(_) := l};
+ litParentsY = {<p,l> | /t:appl(p,[*_,l:appl(prod(l,_,_),_),*_]) := y, lit(_) := l || cilit(_) := l};
  
  unreserved
     = { <posX.offset, lc, c> | <posX, lc, _> <- litX - litY, <posY, c, _>  <- lexY - lexX, posX.offset == posY.offset, posX.length == posY.length}
@@ -249,7 +249,8 @@ void tokens(Tree x, Tree y) {
          th(scope("col"), "Lexical");
        });
        tbody(() {
-         for (<p, lc, c> <- sort(unreserved, bool (<int of1, _, _>, <int of2, _, _>) { return of1 < of2; })) {
+        //  for (<p, lc, c> <- sort(unreserved, bool (<int of1, _, _>, <int of2, _, _>) { return of1 < of2; })) {
+        for (<p, lc, c> <- sort(unreserved, bool (tuple[int,Symbol,str] t1, tuple[int,Symbol,str] t2) { return t1[0] < t2[0]; })) {
            tr(() {
              th(scope("row"), "<p>");
              td("<symbol2rascal(lc)>");
@@ -315,7 +316,8 @@ void tokens(Tree x, Tree y) {
          });
        });
        tbody(() {
-         for (<p, c, w1, w2> <- sort(samePosDifferentLength, bool (<int of1, _, _, _>, <int of2, _, _, _>) { return of1 < of2; })) {
+        //  for (<p, c, w1, w2> <- sort(samePosDifferentLength, bool (<int of1, _, _, _>, <int of2, _, _, _>) { return of1 < of2; })) {
+          for (<p, c, w1, w2> <- sort(samePosDifferentLength, bool (tuple[int,Symbol,str,str] t1, tuple[int,Symbol,str,str] t2) { return t1[0] < t2[0]; })) {
            tr(() {
              th(attr("scope","row"), () {
                text("<p>");
@@ -340,7 +342,7 @@ void tokens(Tree x, Tree y) {
      
      follows = { prod(c, [*yy, conditional(ll, {\not-follow(cc)})], aa) 
                | <_, c, _, _> <- samePosDifferentLength, 
-               /Production p:prod(c, [*yy, ll:\iter(cc:\char-class(_))],aa) := amb({x, y})
+                 /prod(c, [*yy, ll:\iter(cc:\char-class(_))],aa) := amb({x, y})
                };
                
      if (follows != {} ) {
@@ -373,7 +375,8 @@ void tokens(Tree x, Tree y) {
          th(scope("col"), "Words");
        });
        tbody(() {
-         for (<p, lc, c, w1, w2> <- sort(shorterLitPrefixLex, bool (<int of1, _, _, _, _>, <int of2, _, _, _, _>) { return of1 < of2; })) {
+        //  for (<p, lc, c, w1, w2> <- sort(shorterLitPrefixLex, bool (<int of1, _, _, _, _>, <int of2, _, _, _, _>) { return of1 < of2; })) {
+         for (<p, lc, c, w1, w2> <- sort(shorterLitPrefixLex, bool (tuple[int,Symbol,Symbol,str,str] t1, tuple[int,Symbol,Symbol,str,str] t2) { return t1[0] < t2[0]; })) {
            tr(() {
              th(scope("row"), "<p>");
              td("<symbol2rascal(c)>");
@@ -386,7 +389,7 @@ void tokens(Tree x, Tree y) {
      
      preceeds = {prod(c, [conditional(cc, {\not-precede(cc)}), *yy], aa) 
                 | <_, c, _, _, _> <- shorterLitPrefixLex, 
-                /Production p:prod(c, [cc:\char-class(_), *yy],aa) := amb({x, y})
+                  /prod(c, [cc:\char-class(_), *yy],aa) := amb({x, y})
                 };
                
      if (preceeds != {} ) {
@@ -404,13 +407,12 @@ void tokens(Tree x, Tree y) {
 }
 
 str verticalCauses(Tree x, Tree y, set[Production] pX, set[Production] pY) {
-  return exceptAdvise(x, y, pX, pY)
-       + exceptAdvise(y, x, pY, pX);
+  return exceptAdvise(x, pY) + exceptAdvise(y, pX);
 }
 
-str exceptAdvise(Tree x, Tree y, set[Production] pX, set[Production] pY) {
+str exceptAdvise(Tree x, set[Production] pY) {
   result = "";
-  if (appl(p, argsX) := x, appl(q, argsY) := y) {
+  if (appl(p, argsX) := x) {
     if (i <- index(argsX), appl(apX,_) := argsX[i], apX notin pY) {
       labelApX = "PROVIDE_LABEL";
       
@@ -446,13 +448,13 @@ str danglingCauses(Tree x, Tree y) {
 }
 
 str danglingFollowSolutions(Tree x, Tree y) {
-  if (prod(_, lhs, _) := x.prod, prod(_, [pref*, _, l:lit(_), more*], _) := y.prod, lhs == pref) {
+  if (prod(_, lhs, _) := x.prod, prod(_, [*prev, _, l:lit(_), *_], _) := y.prod, lhs == prev) {
     return "To fix this ambiguity you might add a follow restriction for <symbol2rascal(l)> on:
            '   <format(x.prod)> (<x.prod>)
            "; 
   }
   
-  if (prod(_, lhs, _) := y.prod, prod(_, [pref*, _, l:lit(_), more*], _) := x.prod, lhs == pref) {
+  if (prod(_, lhs, _) := y.prod, prod(_, [*prev, _, l:lit(_), *_], _) := x.prod, lhs == prev) {
     return "To fix this ambiguity you might add a follow restriction for <symbol2rascal(l)> on:
            '  <format(y.prod)>
            "; 

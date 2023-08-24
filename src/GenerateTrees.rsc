@@ -15,12 +15,13 @@ import Termination;
 import Conditions;
 import Simplify;
 import Util;
+import Exception;
 import analysis::grammars::Dependency;
 
 data opt[&T] = yes(&T thing) | no();
 
 opt[str] findAmbiguousSubString(type[Tree] gr, int effort) 
-  = yes(Tree t) := findAmbiguousTree(gr, effort) ? yes("<t>") : no();
+  = yes(Tree t) := findAmbiguousSubTree(gr, effort) ? yes("<t>") : no();
 
 opt[Tree] findAmbiguousSubTree(type[Tree] gr, int effort) {
    gr = completeGrammar(gr);
