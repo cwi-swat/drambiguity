@@ -3,7 +3,7 @@ This software can be cited directly as follows:
 ```bibtex
 @software{jurgen_j_vinju_2023_8280198,
   author       = {Jurgen J. Vinju},
-  title        = {cwi-swat/drambiguity: v0.1.2},
+  title        = {Dr Ambiguity},
   month        = aug,
   year         = 2023,
   publisher    = {Zenodo},
