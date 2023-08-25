@@ -223,7 +223,7 @@ Model update(Msg::commitGrammar(int selector), Model m) {
     }
     
     // and reparse the examples
-    m.examples = for (<str ex, Symbol s, Maybe[Tree] t, str _st> <- m.examples) {
+    m.examples = for (<str ex, Symbol s, Maybe[Tree] _t, str _st> <- m.examples) {
       try {
         tt = reparse(m.grammar, s, ex);
         append <ex, s, just(tt), status(just(tt))>;
