@@ -25,6 +25,6 @@ It does not hurt to press the `Generate` button a few times; which is often more
 Investing a lot of work could lead to many similar ambiguities which are all solved in the same way. It is better to 
 waste time on each specific instance by searching for a few instances only.
 
-After you have found a suitable amount of examples (say three), it is time to move on to the ((Diagnosis)) features of Dr Ambiguity.
+After you have found a suitable amount of examples (say three), it is time to move on to the ((Diagnostics)) features of Dr Ambiguity.
 
 
