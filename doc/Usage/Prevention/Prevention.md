@@ -1,5 +1,5 @@
 ---
-title: Prevention of Ambiguity
+title: Prevention
 ---
 
 The stash of sentences on the `Sentences` tab is a valuable source of information, for when a grammar

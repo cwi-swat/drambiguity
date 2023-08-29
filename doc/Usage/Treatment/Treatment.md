@@ -1,5 +1,5 @@
 ---
-title: Treatment of Ambiguity
+title: Treatment
 ---
 
 Once the ((Diagnostics)) stage has provided an idea for treating the ambiguity, we can apply this treatment (or another) to the current grammar.

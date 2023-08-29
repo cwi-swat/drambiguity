@@ -1,5 +1,5 @@
 ---
-title: Ambiguity Detection
+title: Detection
 ---
 
 To detect new ambiguity in an existing grammar:
