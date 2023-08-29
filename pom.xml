@@ -85,6 +85,7 @@
                                                     <issues>|http://github.com/cwi-swat/drambiguity/issues|</issues>
                                                     <srcs>
                                                         <src>${project.basedir}/src</src>
+                                                        <src>${project.basedir}/doc</src>
                                                     </srcs>
                                                     <ignores>
                                                     </ignores>
