@@ -53,8 +53,7 @@ Tree x = t;
 The above diagnosis hints at a treatment, which when applied indeed solves the problem:
 ```rascal-shell,continue
 syntax F = [a-z] | left F "+" F;
-t = parse(#F, "e+e+e");
-prettyTree(t)
+prettyTree(parse(#F, "e+e+e"));
 ```
 
 The simple example aside, ambiguity of context-free grammars is not decidable in general. There do exist static analyses
@@ -84,7 +83,7 @@ many additional non-terminals. It also shapes your grammar further away from the
 Most importantly, avoiding conflicts manually in the grammar entails having to make a scanner and scan the input first. That way
 an `i` on the input is already decided to be an identifier `ifNotOnly` or a keyword `if` using the scanners
 heuristics of "reserve keywords" and "longest match". Scanners and their heuristics exist to make the parsers that come
-after deterministics. However, many programming languages and DSLs do not fit the heuristics of scanners at all, 
+after deterministic. However, many programming languages and DSLs do not fit the heuristics of scanners at all, 
 and their grammars are non-deterministic in any style. Hence non-deterministic parsing helps avoid a lot
 of manual grammar hacking. 
 
@@ -106,13 +105,13 @@ parser but never looks into its inner workings.
 ## What is ambiguity engineering, and what features of Dr Ambiguity help with it?
 
 These are the challenges that a grammar engineer faces with respect to ambiguity:
-1. We want to ((Detection))[detect] more ambiguity, before our users do so accidentally. 
-1. Once we have an example, we need to ((Diagnostics))[diagnose] the instance to figure out the **causes** of ambiguity.
+1. We want to [detect]((Detection)) more ambiguity, before our users do so accidentally. 
+1. Once we have an example, we need to [diagnose]((Diagnostics)) the instance to figure out the **causes** of ambiguity.
 1. The next step is ambiguity ((Treatment)) where we select an appropriate **disambiguation mechanism** to remove (at least one of) the earlier detected causes.
-1. For the foreseeable future we want to ((Prevention))[prevent] our grammar from regressing to this specific ambiguity. We need to have some form of automated **regression testing**.
+1. For the foreseeable future we want to [prevent]((Prevention)) our grammar from regressing to this specific ambiguity. We need to have some form of automated **regression testing**.
 1. When all our ambiguities have been detected, diagnosed, treated and tested, we might seek a **proof of unambiguity**. 
 
-Proof of unambiguity is not for Dr Ambiguity. There is a tool called "AmbiDexter" which you can try for that. Proving unambiguity is undecidable, has many parameters to tweak and its expensive in time and space. With Dr Ambiguity we strive for an interactive and usable experience, so we focus on the other challenes. All the other challenges
+Proof of unambiguity is not for Dr Ambiguity. There is a tool called "AmbiDexter" which you can try for that. Proving unambiguity is undecidable, has many parameters to tweak and its expensive in time and space. With Dr Ambiguity we strive for an interactive and usable experience, so we focus on the other challenges. All the other challenges
 are addressed by Dr Ambiguity. You can read about how to use it, respectively, here:
 * ((Detection))
 * ((Diagnostics)), 

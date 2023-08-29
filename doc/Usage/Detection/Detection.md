@@ -4,7 +4,7 @@ title: Ambiguity Detection
 
 To detect new ambiguity in an existing grammar:
 1. [Start Dr Ambiguity]((Usage))
-2. Open the Sentence tab
+2. Open the `Sentence` tab
 3. Press the `Generate` button
 
 If Dr Ambiguity finds new examples, they will stash all of them in the sentence stash below. Each of the examples will be diagnoses as `amb` and you can select one to work on by pressing

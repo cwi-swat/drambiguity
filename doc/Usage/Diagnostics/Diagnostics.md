@@ -11,6 +11,8 @@ Typically the following steps are taken:
 2. When we have focused and simplified enough, we go and see the `Graphic` tab to learn a bit about what we are looking at.
 3. Then we quickly move to the `Diagnostics` page, because the graphic is usually just confusing.
 
+![Human readable diagnostics and treatment report]((diagnostics-report.png))
+
 The diagnostics page explains what the commonalities and differences are between each pair of alternatives in the top ambiguity cluster.
 * if an ambiguity exists, it is a different tree for the same input, for the same non-terminal
 * the differences between the tree are the **causes** of the ambiguity, because if they did not exist, the ambiguity would not exist
