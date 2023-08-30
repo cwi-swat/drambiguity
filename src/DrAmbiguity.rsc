@@ -314,8 +314,10 @@ void graphic(Model m) {
   // for lack of a visual, here we use ascii art:
    if (m.tree is just) {
       nestingDepth = ambNestingDepth(m.tree.val);
+      println("nestingDepth is <nestingDepth>");
       if (nestingDepth > 3) {
-        paragraph("This ambiguous forest has deeply nested ambiguity (<nestingDepth>). To visualize these ambiguities please Focus on the deepest cluster first.");
+        alertWarning("This ambiguous forest has deeply nested ambiguity (<nestingDepth>). Since visualizations grow exponentially in the nesting depth, it is better to focus on the deepest cluster first.");
+        focusButton();
         return;
       }
 
@@ -369,40 +371,46 @@ void view(Model m) {
             fileUI(m);
           });
 
-          li(class("nav-item <if (m.tab is grammar) {>active<}>"),() {
-            a(class("nav-link"), href("#grammar"), onClick(onTab(Tab::grammar())), "Grammar"); 
+          li(class("nav-item"),() {
+            a(class("nav-link <if (m.tab is grammar) {>active<}>"), href("#grammar"), onClick(onTab(Tab::grammar())), "Grammar"); 
           });
 
-          li(class("nav-item <if (m.tab is sentence) {>active<}>"), () {
-            a(class("nav-link"), href("#input"), onClick(onTab(Tab::sentence())), "Sentence");
+          li(class("nav-item"), () {
+            a(class("nav-link <if (m.tab is sentence) {>active<}>"), href("#input"), onClick(onTab(Tab::sentence())), "Sentence");
           });
 
           li(class("nav-item"), () {
             a(class("nav-link <if (m.tab is graphic) {>active<}>"), href("#graphic"), onClick(onTab(Tab::graphic())), "Graphic");
           });
 
-          li(class("nav-item <if (m.tab is diagnosis) {>active<}>"), () {
-            a(class("nav-link"), href("#diagnose"), onClick(onTab(Tab::diagnosis())), "Diagnosis"); 
+          li(class("nav-item"), () {
+            a(class("nav-link <if (m.tab is diagnosis) {>active<}>"), href("#diagnose"), onClick(onTab(Tab::diagnosis())), "Diagnosis"); 
           });
       });
     });
         
     div(class("tab-content"), id("tabs"),  () {
       div(class("tab-pane fade-in <if (m.tab is sentence) {>active<}>"), id("input"), () {
-        inputPane(m);
+        if (m.tab is sentence) {
+          inputPane(m);
+        }
       });
      
       div(class("tab-pane fade-in <if (m.tab is graphic) {>active<}>"), id("graphic"), () {
-        graphicPane(m);
+        if (m.tab is graphic) {
+          graphicPane(m);
+        }
       });
       
       div(class("tab-pane fade-in <if (m.tab is grammar) {>active<}>"), id("grammar"), () {
-        grammarPane(m);
+        if (m.tab is grammar) {
+          grammarPane(m);
+        }
       });
       
       div(class("tab-pane fade-in <if (m.tab is diagnosis) {>active<}>"), id("diagnose"), () {
           if (m.tree is just) {
-            diagnose(m.tree.val);
+              diagnose(m.tree.val);
           }
           else {
              alertInfo("Diagnosis of ambiguity is unavailable while the input sentence has a parse error.");
@@ -537,11 +545,11 @@ void inputPane(Model m) {
                   alertInfo("This <if (m.input == "") {>empty <}>sentence is grammatically not in <m.grammar>.");
                 } 
                 else {
-                  alertInfo("This grammatically correct sentence is <if (!isAmb) {>not<}> ambiguous, and it has<if (!nestedAmb) {> no<}> nested ambiguity.");
+                  alertInfo("This grammatically correct sentence is <if (!isAmb) {>not<}> ambiguous, and it has<if (!nestedAmb) {> no<}> nested ambiguity <if (nestedAmb) {>up to a depth of <ambNestingDepth(m.tree.val)> clusters<}>.");
                 }
               });
               if (nestedAmb) {          
-                button(class("list-group-item"), onClick(focus()), "Focus on nested");
+                focusButton();
               }
               if (m.tree is just) {          
                 button(class("list-group-item"), onClick(storeInput()), "Stash");
@@ -609,6 +617,10 @@ void inputPane(Model m) {
             });
           });
         } 
+}
+
+void focusButton() {
+  button(class("list-group-item"), onClick(focus()), "Focus on nested");
 }
 
 void graphicPane(Model m) {

@@ -136,7 +136,7 @@ in the length of the represented input string. Grammars with very long productio
 running times.
 }   
 @memo int ambNestingDepth(appl(_, list[Tree] args)) = (0 | max(it, ambNestingDepth(a)) | a <- args);
-@memo int ambNestingDepth(amb(set[Tree] alts))      = (1 | max(it, ambNestingDepth(a)) | a <- alts);
+@memo int ambNestingDepth(amb(set[Tree] alts))      = (1 | max(it, 1 + ambNestingDepth(a)) | a <- alts);
 @memo int ambNestingDepth(cycle(_,_)) = 0;
 @memo int ambNestingDepth(char(_)) = 0;
 
