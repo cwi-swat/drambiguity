@@ -28,7 +28,6 @@ import util::Maybe;
 import ValueIO;
 import vis::Text;
 
-private loc www = |http://localhost:7000/index.html|;
 private loc root = |project://drambiguity/src|;
 
 @synopsis{start DrAmbiguity with a fresh grammar and an example input sentence}
@@ -73,8 +72,17 @@ App[Model] drAmbiguity(Model m, str id="DrAmbiguity")
       root
     );
 
-Model model(&T<:Tree input, type[Tree] grammar) 
-  = model(grammar)[tree=just(input)];
+data Tab 
+  = sentence()
+  | graphic()
+  | grammar()
+  | diagnosis()
+  ;
+
+Model model(&T<:Tree input, type[Tree] grammar, Tab tab=sentence()) 
+  = model(grammar, tab=tab)[tree=just(input)];
+
+Model model(loc saved) = readBinaryValueFile(#Model, saved);
 
 data Model 
   = model(type[Tree] grammar,
@@ -90,7 +98,8 @@ data Model
       bool labels = false, 
       bool literals = false,
       bool \layout = false,
-      bool chars = true
+      bool chars = true,
+      Tab tab = sentence()
     );
 
 data Msg 
@@ -116,8 +125,10 @@ data Msg
    | filename(loc file)
    | nofilename()
    | commitMessage(str msg)
+   | setTab(Tab t)
    ;
 
+Model update(setTab(Tab t), Model m) = m[tab=t];
 Model update(clearErrors(), Model m) = m[errors=[]];
 Model update(labels(), Model m) = m[labels = !m.labels];
 Model update(literals(), Model m) = m[literals = !m.literals];
@@ -302,6 +313,12 @@ Model freshSentences(Model m) {
 void graphic(Model m) {
   // for lack of a visual, here we use ascii art:
    if (m.tree is just) {
+      nestingDepth = ambNestingDepth(m.tree.val);
+      if (nestingDepth > 3) {
+        paragraph("This ambiguous forest has deeply nested ambiguity (<nestingDepth>). To visualize these ambiguities please Focus on the deepest cluster first.");
+        return;
+      }
+
       table(class("table"), class("table-hover"), class("table-sm"), () {
         if (amb(alts) := m.tree.val) {  
             thead(() {
@@ -341,6 +358,7 @@ void graphic(Model m) {
  
 Msg onNewSentenceInput(str t) = newInput(t);
 Msg onNewGrammarInput(str t) = newGrammar(t); 
+Msg onTab(Tab t) = setTab(t);
  
 void view(Model m) {
    container(true, () {
@@ -351,38 +369,38 @@ void view(Model m) {
             fileUI(m);
           });
 
-          li(class("nav-item"),() {
-            a(class("nav-link"), href("#grammar"), dataToggle("tab"), "Grammar"); 
+          li(class("nav-item <if (m.tab is grammar) {>active<}>"),() {
+            a(class("nav-link"), href("#grammar"), onClick(onTab(Tab::grammar())), "Grammar"); 
           });
 
-          li(class("nav-item active"), () {
-            a(class("nav-link"), href("#input"), dataToggle("tab"), "Sentence");
-          });
-
-          li(class("nav-item"), () {
-            a(class("nav-link"), href("#graphic"), dataToggle("tab"), "Graphic");
+          li(class("nav-item <if (m.tab is sentence) {>active<}>"), () {
+            a(class("nav-link"), href("#input"), onClick(onTab(Tab::sentence())), "Sentence");
           });
 
           li(class("nav-item"), () {
-            a(class("nav-link"), href("#diagnose"), dataToggle("tab"), "Diagnosis"); 
+            a(class("nav-link <if (m.tab is graphic) {>active<}>"), href("#graphic"), onClick(onTab(Tab::graphic())), "Graphic");
+          });
+
+          li(class("nav-item <if (m.tab is diagnosis) {>active<}>"), () {
+            a(class("nav-link"), href("#diagnose"), onClick(onTab(Tab::diagnosis())), "Diagnosis"); 
           });
       });
     });
         
     div(class("tab-content"), id("tabs"),  () {
-      div(class("tab-pane fade in active"), id("input"), () {
+      div(class("tab-pane fade-in <if (m.tab is sentence) {>active<}>"), id("input"), () {
         inputPane(m);
       });
      
-      div(class("tab-pane"), id("graphic"), () {
+      div(class("tab-pane fade-in <if (m.tab is graphic) {>active<}>"), id("graphic"), () {
         graphicPane(m);
       });
       
-      div(class("tab-pane fade in"), id("grammar"), () {
+      div(class("tab-pane fade-in <if (m.tab is grammar) {>active<}>"), id("grammar"), () {
         grammarPane(m);
       });
       
-      div(class("tab-pane fade in"), id("diagnose"), () {
+      div(class("tab-pane fade-in <if (m.tab is diagnosis) {>active<}>"), id("diagnose"), () {
           if (m.tree is just) {
             diagnose(m.tree.val);
           }

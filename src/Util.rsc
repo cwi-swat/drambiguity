@@ -6,6 +6,7 @@ import Node;
 import lang::rascal::grammar::definition::Regular;
 import lang::rascal::format::Grammar;
 import util::Maybe;
+import util::Math;
 import String;
 
 Symbol delabel(label(str _, Symbol s)) = delabel(s);
@@ -124,26 +125,23 @@ tuple[Tree, int] completeLocs(Tree t, loc parent, int offset) {
 set[Symbol] sorts(type[&T <: Tree] grammar)
   = { delabel(s) | /Symbol s := grammar.definitions, isRegular(s) || s is lex || s is sort, !(s is empty)};
    
-// Tree shared(Tree t) {
-//    done = {};
-   
-//    return visit(t) {
-//      case Tree a : {
-//         if (<a, l, u> <- done, l == a@\loc) {
-//           insert a[@unique=u];
-//         }
-//         else {
-//           done += <a, a@\loc, a@unique>;
-//         }
-//       }
-//    }
-// }
+@synopsis{compute the depth of amb clusters as they are nested on top of each other.}
+@description{
+This function uses @memo to avoid exponential running times. If ambiguity clusters are nested,
+then the size of the forest in memory is polynomial, even if an exponential number of trees are represented.
+The algorithm counts on the structural equality of nested clusters as they are reached via different
+paths of the parent clusters. If the number of elements in each cluster is bounded to 2 then
+this count will be linear in the size of the cluster in memory, which means its a polynomial
+in the length of the represented input string. Grammars with very long productions produce (much) longer
+running times.
+}   
+@memo int ambNestingDepth(appl(_, list[Tree] args)) = (0 | max(it, ambNestingDepth(a)) | a <- args);
+@memo int ambNestingDepth(amb(set[Tree] alts))      = (1 | max(it, ambNestingDepth(a)) | a <- alts);
+@memo int ambNestingDepth(cycle(_,_)) = 0;
+@memo int ambNestingDepth(char(_)) = 0;
 
-@memo
-str format(Symbol s) = symbol2rascal(s);
+@memo str format(Symbol s) = symbol2rascal(s);
 
-@memo
-str format(Production p) = topProd2rascal(p);
+@memo str format(Production p) = topProd2rascal(p);
 
-@memo
-str format(type[Tree] grammar) = trim(grammar2rascal(Grammar::grammar({}, grammar.definitions)));
+@memo str format(type[Tree] grammar) = trim(grammar2rascal(Grammar::grammar({}, grammar.definitions)));
