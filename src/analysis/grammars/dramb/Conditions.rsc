@@ -1,4 +1,4 @@
-module Conditions
+module analysis::grammars::dramb::Conditions
 
 import Grammar;
 import ParseTree;

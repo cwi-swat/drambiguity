@@ -1,10 +1,10 @@
-module Simplify
+module analysis::grammars::dramb::Simplify
 
 import ParseTree;
 import Boolean;
 import util::Math;
-import Detection;
-import Util;
+import analysis::grammars::dramb::Detection;
+import analysis::grammars::dramb::Util;
 import Set;
 import IO;
 

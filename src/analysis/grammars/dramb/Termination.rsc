@@ -1,8 +1,8 @@
-module Termination
+module analysis::grammars::dramb::Termination
 
 import Grammar;
 import ParseTree;
-import Util;
+import analysis::grammars::dramb::Util;
 import analysis::grammars::Dependency;
 import Set;
 

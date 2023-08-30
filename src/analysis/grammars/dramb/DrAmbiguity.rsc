@@ -1,4 +1,4 @@
-module DrAmbiguity
+module analysis::grammars::dramb::DrAmbiguity
 
 import DateTime;
 import salix::Core;
@@ -16,16 +16,16 @@ import Set;
 import String;
 import Boolean;  
 import util::Math;
-import Simplify;
-import GenerateTrees;
-import Popups;
-import Detection;
+import analysis::grammars::dramb::Simplify;
+import analysis::grammars::dramb::GenerateTrees;
+import analysis::grammars::dramb::Popups;
+import analysis::grammars::dramb::Detection;
 import util::Reflective;
-import Util;
+import analysis::grammars::dramb::Util;
 import Grammar;
-import Diagnose; 
-import Brackets;
-import GrammarEditor;
+import analysis::grammars::dramb::Diagnose; 
+import analysis::grammars::dramb::Brackets;
+import analysis::grammars::dramb::GrammarEditor;
 import util::Maybe;
 import ValueIO;
 import vis::Text;

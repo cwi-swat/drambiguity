@@ -1,6 +1,6 @@
-module Brackets
+module analysis::grammars::dramb::Brackets
 
-import Util;
+import analysis::grammars::dramb::Util;
 import ParseTree;
 
 Production rule(Symbol s) = prod(label("bracket", s), [lit("("), layouts("*default*"), s, layouts("*default*"), lit(")")], {});

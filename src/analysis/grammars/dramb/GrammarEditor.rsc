@@ -1,5 +1,5 @@
 @bootstrapParser
-module GrammarEditor
+module analysis::grammars::dramb::GrammarEditor
 
 import lang::rascal::grammar::definition::Modules;
 import lang::rascal::\syntax::Rascal;

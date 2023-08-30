@@ -1,4 +1,4 @@
-module Popups
+module analysis::grammars::dramb::Popups
 
 import salix::util::WithPopups;
 

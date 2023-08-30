@@ -1,10 +1,10 @@
-module Diagnose
+module analysis::grammars::dramb::Diagnose
 
 import ParseTree;
 import Set;
 import String;
-import Brackets;
-import Util;
+import analysis::grammars::dramb::Brackets;
+import analysis::grammars::dramb::Util;
 import lang::rascal::format::Grammar;
 import salix::HTML;
 import salix::Node;

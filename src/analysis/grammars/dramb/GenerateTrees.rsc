@@ -1,4 +1,4 @@
-module GenerateTrees
+module analysis::grammars::dramb::GenerateTrees
 
 import util::Math;
 import Set;
@@ -10,11 +10,11 @@ import lang::rascal::grammar::definition::Regular;
 import lang::rascal::grammar::definition::Literals;
 import lang::rascal::grammar::definition::Parameters;
 import IO;
-import Detection;
-import Termination;
-import Conditions;
-import Simplify;
-import Util;
+import analysis::grammars::dramb::Detection;
+import analysis::grammars::dramb::Termination;
+import analysis::grammars::dramb::Conditions;
+import analysis::grammars::dramb::Simplify;
+import analysis::grammars::dramb::Util;
 import Exception;
 import analysis::grammars::Dependency;
 

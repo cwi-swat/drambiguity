@@ -1,4 +1,4 @@
-module Util
+module analysis::grammars::dramb::Util
 
 import ParseTree;
 import Grammar; 

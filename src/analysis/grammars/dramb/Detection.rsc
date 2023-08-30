@@ -1,4 +1,4 @@
-module Detection
+module analysis::grammars::dramb::Detection
 
 import ParseTree;
 import Exception;
