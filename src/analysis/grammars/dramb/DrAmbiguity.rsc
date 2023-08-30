@@ -184,7 +184,7 @@ str status(nothing()) = "error";
 str status(just(Tree x)) = "no amb." when /amb(_) !:= x;
 default str status(just(Tree x)) = "amb";
 
-Model update(storeInput(), Model m) = m[examples= [<m.input, Util::symbol(m.tree.val), m.tree, status(m.tree)>] + m.examples];
+Model update(storeInput(), Model m) = m[examples= [<m.input, analysis::grammars::dramb::Util::symbol(m.tree.val), m.tree, status(m.tree)>] + m.examples];
 
 Model update(setStartNonterminal(Symbol s), Model m) {
   if (type[Tree] new := type(s, m.grammar.definitions)) {
@@ -292,7 +292,7 @@ Model freshSentences(Model m) {
   if (options:{_,*_} := randomAmbiguousSubTrees(m.grammar, m.generationEffort)) {
     new = m.examples == [] ? [*options] : [op | op <- options, !any(e <- m.examples, just(op) := e.tree)];
     if (new != []) {
-      m.examples += [<"<n>", Util::symbol(n), just(completeLocs(n)), status(just(n))> | n <- new];
+      m.examples += [<"<n>", analysis::grammars::dramb::Util::symbol(n), just(completeLocs(n)), status(just(n))> | n <- new];
       m.errors = [];
     }
     else {
