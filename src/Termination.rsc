@@ -42,9 +42,9 @@ Grammar terminationWeights(Grammar g) {
       recCount    = size(prods & recProds);
       notRecCount = size(prods - recProds);
       
-      // at least 50% of the weight should go to non-recursive rules if they exist
-      notRecWeight = notRecCount != 0 ? (count * 10) / (2 * notRecCount) : 0;
-      recWeight = recCount != 0 ? (count * 10) / (2 * recCount) : 0;
+      // at least 60% of the weight should go to non-recursive rules if they exist
+      notRecWeight = notRecCount != 0 ? (count * 12) / (2 * notRecCount) : 0;
+      recWeight = recCount != 0 ? (count * 8) / (2 * recCount) : 0;
       
       weights += (p : p in recProds ? recWeight : notRecWeight | p <- prods); 
    }
