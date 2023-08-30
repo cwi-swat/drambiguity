@@ -445,13 +445,15 @@ void grammarPane(Model m) {
         textarea(class("form-control"), style(<"width","100%">), rows(25), onChange(onNewGrammarInput), \value(m.grammarText));
     });
     column(2, md(), () {
-      input(class("list-group-item"), style(<"width","100%">), \type("text"), onChange(onCommitMessageInput), \value(m.commitMessage));
-      if (trim(m.commitMessage) != "") {
-        button(class("btn-secondary"), onClick(commitGrammar(-1)), "Commit");
-      }
-      else {
-        button(class("btn-secondary"), disabled(), "Commit");
-      }
+      div(class("list-group"), () { 
+        input(class("list-group-item"), style(<"width","100%">), \type("text"), onChange(onCommitMessageInput), \value(m.commitMessage));
+        if (trim(m.commitMessage) != "") {
+          button(class("btn-secondary"), onClick(commitGrammar(-1)), "Commit");
+        }
+        else {
+          button(class("btn-secondary disabled"), "Commit");
+        }
+      });
     });
   });
   
