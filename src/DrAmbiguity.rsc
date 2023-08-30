@@ -6,6 +6,7 @@ import salix::HTML;
 import salix::Node;
 import salix::Index;
 import salix::App;
+import salix::util::WithPopups;
 import salix::lib::Bootstrap;
 import lang::rascal::format::Grammar;
 import ParseTree;
@@ -17,6 +18,7 @@ import Boolean;
 import util::Math;
 import Simplify;
 import GenerateTrees;
+import Popups;
 import Detection;
 import util::Reflective;
 import Util;
@@ -71,6 +73,9 @@ App[Model] drAmbiguity(Model m, str id="DrAmbiguity")
       ),
       root
     );
+
+App[Model] docDrAmbiguity(Model m) 
+  = withPopupsWeb(popups(), m, view, "Dr Ambiguity");
 
 data Tab 
   = sentence()
@@ -367,7 +372,7 @@ void view(Model m) {
     div(() {
       ul(class("nav nav-pills"), id("tabs"), () {
           li(class("nav-item dropdown"), () {
-            a(class("nav-link dropdown-toggle"), \data-toggle("dropdown"), role("button"), hasPopup(true), expanded(false), "File");
+            a(class("nav-link dropdown-toggle"), \data-toggle("dropdown"), id("file-menu"), role("button"), hasPopup(true), expanded(false), "File");
             fileUI(m);
           });
 
