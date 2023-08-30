@@ -390,25 +390,25 @@ void view(Model m) {
     });
         
     div(class("tab-content"), id("tabs"),  () {
-      div(class("tab-pane fade-in <if (m.tab is sentence) {>active<}>"), id("input"), () {
+      div(class("tab-pane <if (m.tab is sentence) {>active<}>"), id("input"), () {
         if (m.tab is sentence) {
           inputPane(m);
         }
       });
      
-      div(class("tab-pane fade-in <if (m.tab is graphic) {>active<}>"), id("graphic"), () {
+      div(class("tab-pane <if (m.tab is graphic) {>active<}>"), id("graphic"), () {
         if (m.tab is graphic) {
           graphicPane(m);
         }
       });
       
-      div(class("tab-pane fade-in <if (m.tab is grammar) {>active<}>"), id("grammar"), () {
+      div(class("tab-pane <if (m.tab is grammar) {>active<}>"), id("grammar"), () {
         if (m.tab is grammar) {
           grammarPane(m);
         }
       });
       
-      div(class("tab-pane fade-in <if (m.tab is diagnosis) {>active<}>"), id("diagnose"), () {
+      div(class("tab-pane <if (m.tab is diagnosis) {>active<}>"), id("diagnose"), () {
           if (m.tree is just) {
               diagnose(m.tree.val);
           }
@@ -427,7 +427,7 @@ void view(Model m) {
         });
         column(2, md(), () {
           div(class("list-group list-group-flush"), style(<"list-style-type","none">), () {
-            button(class("list-group-item"), onClick(clearErrors()), "Clear");
+            button(class("btn-secondary"), onClick(clearErrors()), "Clear");
           });
         });
       });
@@ -447,10 +447,10 @@ void grammarPane(Model m) {
     column(2, md(), () {
       input(class("list-group-item"), style(<"width","100%">), \type("text"), onChange(onCommitMessageInput), \value(m.commitMessage));
       if (trim(m.commitMessage) != "") {
-        button(class("list-group-item"), onClick(commitGrammar(-1)), "Commit");
+        button(class("btn-secondary"), onClick(commitGrammar(-1)), "Commit");
       }
       else {
-        button(class("list-group-item"), disabled(), "Commit");
+        button(class("btn-secondary"), disabled(), "Commit");
       }
     });
   });
@@ -478,10 +478,10 @@ void grammarPane(Model m) {
                       td(printDateTime(stamp, "dd-MM-yyyy HH:mm:ss"));
                       td(msg);
                       td(() {
-                           button(class("button"), onClick(commitGrammar(count)), "revert");
+                           button(class("button btn-secondary"), onClick(commitGrammar(count)), "revert");
                       });
                       td(() {
-                         button(class("button"), onClick(removeGrammar(count)), "rm");
+                         button(class("button btn-secondary"), onClick(removeGrammar(count)), "rm");
                       });
                     });
                     count += 1;
@@ -548,25 +548,28 @@ void inputPane(Model m) {
                   alertInfo("This grammatically correct sentence is <if (!isAmb) {>not<}> ambiguous, and it has<if (!nestedAmb) {> no<}> nested ambiguity <if (nestedAmb) {>up to a depth of <ambNestingDepth(m.tree.val)> clusters<}>.");
                 }
               });
+              
               if (nestedAmb) {          
                 focusButton();
               }
+
               if (m.tree is just) {          
-                button(class("list-group-item"), onClick(storeInput()), "Stash");
+                button(class("btn-secondary"), onClick(storeInput()), "Stash");
               }
+
               if (isAmb || nestedAmb) {
-                button(class("list-group-item"), onClick(simplify()), "Simplify");
+                simplifyButton();
               }
-              button(class("list-group-item"), onClick(freshSentence()), "Generate");
+
+              button(class("btn-secondary"), onClick(freshSentence()), "Generate");
+
               input(class("list-group-item"), \type("range"), \value("<m.generationEffort>"), min("1"), max("100"), onChange(newAmountInput));
-              div(class("list-group-item"), class("dropdown"),  () {
-                button(class("btn"), class("btn-secondary"), class("dropdown-toggle"), \type("button"), id("nonterminalChoice"), dropdown(), hasPopup(true), expanded(false), 
-                  "Start: <format(m.grammar.symbol)>");
-                div(class("dropdown-menu"), labeledBy("nonterminalChoice"), () {
-                    for (Symbol x <- sorts(m.grammar)) {
-                        button(class("list-group-item"), href("#"), onClick(setStartNonterminal(x)),  "<format(x)>");
-                    }
-                });
+
+              button(class("btn"), class("list-group-item dropdown-toggle"), \type("button"), id("nonterminalChoice"), dropdown(), hasPopup(true), expanded(false), "Start: <format(m.grammar.symbol)>");
+              div(class("dropdown-menu"), labeledBy("nonterminalChoice"), () {
+                  for (Symbol x <- sorts(m.grammar)) {
+                      button(class("list-group-item"), href("#"), onClick(setStartNonterminal(x)),  "<format(x)>");
+                  }
               });
             });
           });
@@ -605,10 +608,10 @@ void inputPane(Model m) {
                       });
                       td(st);
                       td(() {
-                           button(class("button"), onClick(selectExample(count)), "use");
+                           button(class("button btn-secondary"), onClick(selectExample(count)), "use");
                       });
                       td(() {
-                         button(class("button"), onClick(removeExample(count)), "rm");
+                         button(class("button btn-secondary"), onClick(removeExample(count)), "rm");
                       });
                     });
                   }
@@ -620,7 +623,11 @@ void inputPane(Model m) {
 }
 
 void focusButton() {
-  button(class("list-group-item"), onClick(focus()), "Focus on nested");
+  button(class("btn-secondary"), onClick(focus()), "Focus on nested");
+}
+
+void simplifyButton() {
+  button(class("btn-secondary"), onClick(simplify()), "Simplify");
 }
 
 void graphicPane(Model m) {
@@ -642,12 +649,12 @@ void graphicPane(Model m) {
                   alertInfo("This tree is <if (!isAmb) {>not<}> ambiguous, and it has<if (!nestedAmb) {> no<}> nested ambiguity.");
                 });
                 if (nestedAmb) {          
-                  button(class("list-group-item"), onClick(focus()), "Focus on nested");
+                  focusButton();
                 }
-		        // div(class("list-group-item"), () { 
-		        //   input(\type("checkbox"), checked(m.labels), onClick(labels()));
-		        //   text("rules");
-		        // });
+                if (isAmb || nestedAmb) {
+                  simplifyButton();
+                }
+      
 		        div(class("list-group-item "), () { 
 		          input(id("literals"), \type("checkbox"), checked(m.literals), onClick(literals()));
 		          text("literals");
