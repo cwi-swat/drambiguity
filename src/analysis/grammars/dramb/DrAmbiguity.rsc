@@ -65,8 +65,7 @@ App[Model] drAmbiguity(Model m, str id="DrAmbiguity")
           css=["https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"], 
           scripts=[
             "https://code.jquery.com/jquery-3.2.1.slim.min.js",
-            "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js",
-            "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
           ]
         ),
         update
@@ -80,8 +79,7 @@ App[Model] docDrAmbiguity(Model m)
           css=["https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"], 
           scripts=[
             "https://code.jquery.com/jquery-3.2.1.slim.min.js",
-            "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js",
-            "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
           ]);
 
 data Tab 
