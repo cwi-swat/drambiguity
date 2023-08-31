@@ -75,8 +75,8 @@ App[Model] drAmbiguity(Model m, str id="DrAmbiguity")
     );
 
 App[Model] docDrAmbiguity(Model m) 
-  = withPopupsWeb(popups(), m, view, "Dr Ambiguity",
-          // extraCss="",
+  = withPopupsWeb(popups(m), m, view, "Dr Ambiguity",
+          extraCss= popupStyle(),
           css=["https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"], 
           scripts=[
             "https://code.jquery.com/jquery-3.2.1.slim.min.js",
@@ -379,8 +379,8 @@ void view(Model m) {
    container(true, () {
     div(() {
       ul(class("nav nav-pills"), id("tabs"), () {
-          li(class("nav-item dropdown"), () {
-            a(class("nav-link dropdown-toggle"), \data-toggle("dropdown"), id("file-menu"), role("button"), hasPopup(true), expanded(false), "File");
+          li(class("nav-item dropdown"), id("file-menu"), () {
+            a(class("nav-link dropdown-toggle"), \data-toggle("dropdown"), role("button"), hasPopup(true), expanded(false), "File");
             fileUI(m);
           });
 
@@ -551,11 +551,11 @@ void inputPane(Model m) {
    
    row(() {
           column(10, md(), () {
-            textarea(class("form-control"), style(<"width","100%">), rows(10), onChange(onNewSentenceInput), \value(sentence), sentence); 
+            textarea(class("form-control"), id("sentence-editor"), style(<"width","100%">), rows(10), onChange(onNewSentenceInput), \value(sentence), sentence); 
           });    
           column(2, md(), () {
             div(class("list-group list-group-flush"), style(<"list-style-type","none">), () {
-              span(class("list-group-item"), () {
+              span(class("list-group-item"), id("first-impressions"), () {
                 if (isError) {
                   alertInfo("This <if (m.input == "") {>empty <}>sentence is grammatically not in <m.grammar>.");
                 } 
@@ -569,18 +569,18 @@ void inputPane(Model m) {
               }
 
               if (m.tree is just) {          
-                button(class("btn-secondary"), onClick(storeInput()), "Stash");
+                button(class("btn-secondary"), id("stash-button"), onClick(storeInput()), "Stash");
               }
 
               if (isAmb || nestedAmb) {
                 simplifyButton();
               }
 
-              button(class("btn-secondary"), onClick(freshSentence()), "Generate");
+              button(class("btn-secondary"), id("generate-button"), onClick(freshSentence()), "Generate");
 
               input(class("list-group-item"), \type("range"), \value("<m.generationEffort>"), min("1"), max("100"), onChange(newAmountInput));
 
-              button(class("btn"), class("list-group-item dropdown-toggle"), \type("button"), id("nonterminalChoice"), dropdown(), hasPopup(true), expanded(false), "Start: <format(m.grammar.symbol)>");
+              button(class("btn"), class("list-group-item dropdown-toggle"), id("non-terminal-menu"), \type("button"), id("nonterminalChoice"), dropdown(), hasPopup(true), expanded(false), "Start: <format(m.grammar.symbol)>");
               div(class("dropdown-menu"), labeledBy("nonterminalChoice"), () {
                   for (Symbol x <- sorts(m.grammar)) {
                       button(class("list-group-item"), href("#"), onClick(setStartNonterminal(x)),  "<format(x)>");
@@ -638,11 +638,11 @@ void inputPane(Model m) {
 }
 
 void focusButton() {
-  button(class("btn-secondary"), onClick(focus()), "Focus on nested");
+  button(class("btn-secondary"), id("focus-button"), onClick(focus()), "Focus on nested");
 }
 
 void simplifyButton() {
-  button(class("btn-secondary"), onClick(simplify()), "Simplify");
+  button(class("btn-secondary"), id("simplify-button"), onClick(simplify()), "Simplify");
 }
 
 void graphicPane(Model m) {
