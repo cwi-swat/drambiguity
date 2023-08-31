@@ -76,6 +76,7 @@ App[Model] drAmbiguity(Model m, str id="DrAmbiguity")
 
 App[Model] docDrAmbiguity(Model m) 
   = withPopupsWeb(popups(), m, view, "Dr Ambiguity",
+          extraCss="",
           css=["https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"], 
           scripts=[
             "https://code.jquery.com/jquery-3.2.1.slim.min.js",
