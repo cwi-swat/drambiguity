@@ -43,6 +43,15 @@ are explained in ((Detection)) and ((Diagnostics)), as they help searching for n
 ambiguity, on demand. The list of stashed sentences is important. Each record maintains the effect of the _current_ grammar
 to parsing said sentence.
 
+```rascal-prepare
+syntax E = "e" | E "+" E | E "*" E | E "-" E;
+import analysis::grammars::dramb::DrAmbiguity;
+m = model(#E);
+m = update(newInput("e+e+e+e"), m);
+m.tab = sentence();
+docDrAmbiguity(m);
+```
+
 ![Sentence editor and sentence stash]((sentence-editor.png))
 
 The graphics tab repeats the general diagnosis for the _current_ example sentence for the _current_ grammar and 

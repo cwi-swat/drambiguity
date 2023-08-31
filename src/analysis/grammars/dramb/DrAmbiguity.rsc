@@ -1,5 +1,7 @@
 module analysis::grammars::dramb::DrAmbiguity
 
+extend analysis::grammars::dramb::Model;
+
 import DateTime;
 import salix::Core;
 import salix::HTML;
@@ -26,6 +28,7 @@ import Grammar;
 import analysis::grammars::dramb::Diagnose; 
 import analysis::grammars::dramb::Brackets;
 import analysis::grammars::dramb::GrammarEditor;
+
 import util::Maybe;
 import ValueIO;
 import vis::Text;
@@ -84,35 +87,7 @@ App[Model] docDrAmbiguity(Model m)
             "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js"
           ]);
 
-data Tab 
-  = sentence()
-  | graphic()
-  | grammar()
-  | diagnosis()
-  ;
 
-Model model(&T<:Tree input, type[Tree] grammar, Tab tab=sentence()) 
-  = model(grammar, tab=tab)[tree=just(input)];
-
-Model model(loc saved) = readBinaryValueFile(#Model, saved);
-
-data Model 
-  = model(type[Tree] grammar,
-      str input = "",
-      Maybe[Tree] tree = saveParse(grammar, input),
-      Maybe[loc] file = just(|home:///myproject.dra|),
-      str grammarText = format(grammar),
-      str commitMessage = "",
-      lrel[datetime stamp, str msg, str grammar] grammarHistory = [<now(), "initial", grammarText>],
-      lrel[str input, Symbol nt, Maybe[Tree] tree, str status]  examples = [],
-      int generationEffort = 5, 
-      list[str] errors = [],
-      bool labels = false, 
-      bool literals = false,
-      bool \layout = false,
-      bool chars = true,
-      Tab tab = sentence()
-    );
 
 data Msg 
    = labels()
@@ -580,7 +555,7 @@ void inputPane(Model m) {
 
               input(class("list-group-item"), \type("range"), \value("<m.generationEffort>"), min("1"), max("100"), onChange(newAmountInput));
 
-              button(class("btn"), class("list-group-item dropdown-toggle"), id("non-terminal-menu"), \type("button"), id("nonterminalChoice"), dropdown(), hasPopup(true), expanded(false), "Start: <format(m.grammar.symbol)>");
+              button(class("btn"), class("list-group-item dropdown-toggle"), \type("button"), id("nonterminalChoice"), dropdown(), hasPopup(true), expanded(false), "Start: <format(m.grammar.symbol)>");
               div(class("dropdown-menu"), labeledBy("nonterminalChoice"), () {
                   for (Symbol x <- sorts(m.grammar)) {
                       button(class("list-group-item"), href("#"), onClick(setStartNonterminal(x)),  "<format(x)>");
