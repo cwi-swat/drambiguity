@@ -65,6 +65,7 @@ App[Model] drAmbiguity(Model m, str id="DrAmbiguity")
           css=["https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"], 
           scripts=[
             "https://code.jquery.com/jquery-3.2.1.slim.min.js",
+            "https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js",
             "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
           ]
         ),
@@ -75,11 +76,12 @@ App[Model] drAmbiguity(Model m, str id="DrAmbiguity")
 
 App[Model] docDrAmbiguity(Model m) 
   = withPopupsWeb(popups(), m, view, "Dr Ambiguity",
-          extraCss="",
+          // extraCss="",
           css=["https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"], 
           scripts=[
             "https://code.jquery.com/jquery-3.2.1.slim.min.js",
-            "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+            "https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js",
+            "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js"
           ]);
 
 data Tab 
