@@ -175,7 +175,7 @@ Model update(selectExample(int count), Model m) {
   if (m.tree == nothing()) {
     m.errors += ["input sentence has parse error"];
   }
-  int i ="fiets";
+  
   return m;
 }
 
