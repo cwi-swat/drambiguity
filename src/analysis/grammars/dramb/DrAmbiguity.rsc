@@ -75,7 +75,13 @@ App[Model] drAmbiguity(Model m, str id="DrAmbiguity")
     );
 
 App[Model] docDrAmbiguity(Model m) 
-  = withPopupsWeb(popups(), m, view, "Dr Ambiguity");
+  = withPopupsWeb(popups(), m, view, "Dr Ambiguity",
+          css=["https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"], 
+          scripts=[
+            "https://code.jquery.com/jquery-3.2.1.slim.min.js",
+            "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js",
+            "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+          ]);
 
 data Tab 
   = sentence()
@@ -170,6 +176,7 @@ Model update(selectExample(int count), Model m) {
   if (m.tree == nothing()) {
     m.errors += ["input sentence has parse error"];
   }
+  int i ="fiets";
   return m;
 }
 
