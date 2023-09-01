@@ -37,7 +37,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Test with Maven
-        run: mvn -B --update-snapshots compile test
+        run: mvn -B --update-snapshots compile test -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver -Dwebdriver.chrome.browser=`which chrome`
 
       - name: Attach artifact
         id: build-artifact
