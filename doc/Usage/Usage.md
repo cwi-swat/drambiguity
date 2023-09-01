@@ -29,13 +29,14 @@ You can also start Dr Ambiguity with an ambiguous tree example for immediate ((D
 The file menu can be used to store and retrieve the full state of Dr Ambiguity. This includes all data
 use like the grammar, the example sentences for regression testing, and the current input sentence.
 
-![File Menu]((file-menu.png))
-
-The grammar tab shows the current grammar _and_ the history of grammar versions.
-On the top right you can tag the current grammar with a name and store it in the version history.
-More information about this tab is explained in ((Treatment)) where we fix the ambiguities.
-
-![Grammar editor and version history]((grammar-editor.png))
+```rascal-prepare
+syntax E = "e" | E "+" E | E "*" E | E "-" E;
+import analysis::grammars::dramb::DrAmbiguity;
+m = model(#E);
+m = update(newInput("e+e+e+e"), m);
+m.tab = sentence();
+docDrAmbiguity(m); // screenshot
+```
 
 The sentence tab shows the sentence-under-study and a stash of sentences on the TODO list, or on the regression check list.
 There is a general diagnostic view to the right, which displays the verdict for the current sentence. The buttons below
@@ -43,26 +44,31 @@ are explained in ((Detection)) and ((Diagnostics)), as they help searching for n
 ambiguity, on demand. The list of stashed sentences is important. Each record maintains the effect of the _current_ grammar
 to parsing said sentence.
 
-```rascal-prepare
-syntax E = "e" | E "+" E | E "*" E | E "-" E;
-import analysis::grammars::dramb::DrAmbiguity;
-m = model(#E);
-m = update(newInput("e+e+e+e"), m);
-m.tab = sentence();
-docDrAmbiguity(m);
+```rascal-prepare,continue
+m.tab = grammar();
+docDrAmbiguity(m); // screenshot
 ```
 
-![Sentence editor and sentence stash]((sentence-editor.png))
+The grammar tab shows the current grammar _and_ the history of grammar versions.
+On the top right you can tag the current grammar with a name and store it in the version history.
+More information about this tab is explained in ((Treatment)) where we fix the ambiguities.
+
+```rascal-prepare,continue
+m.tab = graphic();
+docDrAmbiguity(m); // screenshot
+```
 
 The graphics tab repeats the general diagnosis for the _current_ example sentence for the _current_ grammar and 
 shows a visual side-by-side view of two alternative parse trees.
 
-![Graphical view of current ambiguous sentence]((graphics-view.png))
+```rascal-prepare,continue
+m.tab = diagnosis();
+docDrAmbiguity(m); // screenshot
+```
 
 Finally, the [Diagnosis]((Diagnostics)) tab displays a readable report, which is preferably read from top to bottom,
 analyzing the differences between each pair of alternative trees and proposing ((Treatment)) where possible. Typical
 diagnostics may span several pages including side-by-side comparisons on a syntax rule level and on a token-by-token
 level. Almost all analyses end with alternative proposals for resolving the ambiguity.
 
-![Human readable diagnostics and treatment report]((diagnostics-report.png))
 
