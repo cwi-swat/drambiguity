@@ -5,14 +5,14 @@ import analysis::grammars::dramb::Model;
 
 str popupStyle() 
     =   ".tooltip {
-        'background: lightyellow;
+        'background: lightgrey;
         'color: black;
         'font-weight: normal;
         'padding: 4px 8px;
-        'font-size: 13px;
-        'border-radius: 14px;
-        'opacity: .5;
-        'max-width: 200px;
+        'font-size: 16px;
+        'border-radius: 4px;
+        'opacity: 1;
+        'max-width: 350px;
         '}
         '.large-tooltip .tooltip-inner {
         'max-width: 20px;
@@ -38,7 +38,7 @@ str popupStyle()
         '  transform: rotate(45deg);
         '}
         '.container-fluid {
-        'padding: 150px 50px 50px 50px
+        'padding: 150px 150px 150px 150px
         '}
         }";
 
@@ -53,7 +53,7 @@ Popups popups(Model m)
 
 Popups sentencePopups()
     = [
-        <"#sentence-editor", popup("The current input sentence under investigation is edited here. It is the main input to the diagnosis process next to the grammar.", placement=top())>,
+        <"#sentence-editor", popup("The current input sentence under investigation is edited here. It is the main input to the diagnosis process next to the grammar.", placement=bottom())>,
         <"#first-impressions", popup("We get a rough impression of the severity of the problem here, if any.", placement=top())>,
         <"#stash-button", popup("These tool buttons help by automatically trying out random simplifications, randomly generating ambiguous sentences, stashing examples for future reference, and focusing on deeper nested ambiguities", placement=left())>,
         <"#nonterminalChoice", popup("Pick the non-terminal to apply to the current sentence here.", placement=left())>
