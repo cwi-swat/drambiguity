@@ -5,7 +5,7 @@ import analysis::grammars::dramb::Model;
 
 str popupStyle() 
     =   ".tooltip {
-        'background: var(--info);
+        'background: lightyellow;
         'color: black;
         'font-weight: normal;
         'padding: 4px 8px;
