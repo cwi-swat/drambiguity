@@ -40,7 +40,11 @@ str popupStyle()
         '.container-fluid {
         'padding: 150px 150px 150px 150px
         '}
-        }";
+        'body {
+        'display: inline-block;
+        'width: 100%
+        '}
+        '}";
 
 Popups popups(Model m) 
     = [
