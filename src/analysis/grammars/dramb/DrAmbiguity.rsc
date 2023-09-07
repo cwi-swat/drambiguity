@@ -483,8 +483,8 @@ void grammarPane(Model m) {
         } 
 }
 
-Msg newAmountInput(int i) {
-  return changeGenerationEffort(i);
+Msg newAmountInput(str i) {
+  return changeGenerationEffort(toInt(i));
 }
 
 Msg loadProjectInput(str file) {
