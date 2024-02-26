@@ -30,7 +30,7 @@ If this function returns `false` then it's time to run ((drAmbiguity)) interacti
 * Use this as a `test` function in your own syntax project, and run it during continuous integration testing. 
 
 :::info
-It's best to use ((IO::findResources)) to locate the binary file that stores your drAmbiguity model.
+It's best to use IO::findResources to locate the binary file that stores your drAmbiguity model.
 :::
 }
 @pitfalls{

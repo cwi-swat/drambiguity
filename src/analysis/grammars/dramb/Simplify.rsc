@@ -18,7 +18,7 @@ Tree simplify(type[Tree] gr, Tree t, int effort=100) {
        return new;
      }
    }   
-   
+  
    return t;
 }
 
@@ -50,7 +50,7 @@ Tree simplify(Tree t) {
        rand = arbInt(size(args));
 
        if (arbBool()) {
-          return appl(r, [args]);
+          return appl(r, args);
        }
 
        return appl(r, args[..rand*delta] + args[min(rand*(delta+1), size(args))..])[@\loc=a@\loc];
