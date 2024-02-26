@@ -1,1 +1,6 @@
 bin
+.DS_Store
+.settings
+pom.xml.releaseBackup
+release.properties
+target
