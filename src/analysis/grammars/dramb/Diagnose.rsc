@@ -474,4 +474,3 @@ void rules(list[Production] rs) {
 }
 
 void rules(set[Production] r) = rules(sort(r));
-
