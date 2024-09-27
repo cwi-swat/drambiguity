@@ -231,8 +231,8 @@ void tokens(Tree x, Tree y) {
  Words lexX = {t | t <- wordsX, lex(_) := t.cat};
  Words lexY = {t | t <- wordsY, lex(_) := t.cat};
  
- litParentsX = {<p,l> | /t:appl(p,[*_,l:appl(prod(l,_,_),_),*_]) := x, lit(_) := l || cilit(_) := l};
- litParentsY = {<p,l> | /t:appl(p,[*_,l:appl(prod(l,_,_),_),*_]) := y, lit(_) := l || cilit(_) := l};
+ litParentsX = {<p,l> | /appl(p,[*_,appl(prod(l,_,_),_),*_]) := x, lit(_) := l || cilit(_) := l};
+ litParentsY = {<p,l> | /appl(p,[*_,appl(prod(l,_,_),_),*_]) := y, lit(_) := l || cilit(_) := l};
  
  unreserved
     = { <posX.offset, lc, c> | <posX, lc, _> <- litX - litY, <posY, c, _>  <- lexY - lexX, posX.offset == posY.offset, posX.length == posY.length}
