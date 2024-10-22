@@ -47,7 +47,6 @@
 				<artifactId>rascal-maven-plugin</artifactId>
 				<version>0.28.5</version>
                                 <configuration>
-                                    <errorsAsWarnings>true</errorsAsWarnings>
                                     <enableStandardLibrary>false</enableStandardLibrary>
                                     <bin>${project.build.outputDirectory}</bin>
                                     <srcs>
