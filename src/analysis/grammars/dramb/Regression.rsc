@@ -81,9 +81,9 @@ list[ParsingRegression] runRegressionTests(type[&T <: Tree] newGrammar, Model m)
             println(" ok!");
         }
       }
-      catch ParseError(_e) : {
+      catch ParseError(l) : {
         println(" parse error!");
-        append error(ex, s, _e);
+        append error(ex, s, l);
       }
       catch value v: {
         println(" unexpected crash!");
