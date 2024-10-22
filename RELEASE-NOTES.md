@@ -1,5 +1,5 @@
 
-## version 0.3.3
+## version 0.3.3, 0.3.4
 
 * This is a maintenance release to align with the latest Rascal versions.
 
