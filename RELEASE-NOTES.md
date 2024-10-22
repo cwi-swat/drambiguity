@@ -1,4 +1,8 @@
 
+## version 0.3.3
+
+* This is a maintenance release to align with the latest Rascal versions.
+
 ## version 0.3.0
 
 * Added Regression module for running the examples in a model against a new grammar
