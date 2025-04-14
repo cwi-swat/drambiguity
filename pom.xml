@@ -45,7 +45,7 @@
 			<plugin>
 				<groupId>org.rascalmpl</groupId>
 				<artifactId>rascal-maven-plugin</artifactId>
-				<version>0.28.9</version>
+				<version>0.30.0-RC18-SNAPSHOT</version>
                                 <configuration>
                                     <enableStandardLibrary>false</enableStandardLibrary>
                                     <bin>${project.build.outputDirectory}</bin>
@@ -69,8 +69,8 @@
 						</goals>
                                             </execution>
                                             <execution>
-                                                <id>default-cli</id>
-                                                <phase>compile</phase>
+                                                <id>default-resources</id>
+                                                <phase>resources</phase>
                                                 <goals>
                                                     <goal>tutor</goal>
                                                 </goals>
@@ -78,7 +78,7 @@
                                                     <enableStandardLibrary>true</enableStandardLibrary>
                                                     <errorsAsWarnings>false</errorsAsWarnings>
                                                     <bin>${project.build.outputDirectory}</bin>
-                                                    <license>${project.basedir}/LICENSE</license>
+                                                    <license>${project.basedir}/LICENSE.md</license>
                                                     <citation>${project.basedir}/CITATION.md</citation>
                                                     <sources>|http://github.com/cwi-swat/drambiguity/blob/main|</sources>
                                                     <issues>|http://github.com/cwi-swat/drambiguity/issues|</issues>
@@ -144,7 +144,7 @@
 		<dependency>
 			<groupId>org.rascalmpl</groupId>
 			<artifactId>rascal</artifactId>
-			<version>0.40.17</version>
+			<version>0.41.0-RC35-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.rascalmpl</groupId>
