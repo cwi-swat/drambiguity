@@ -45,9 +45,8 @@
 			<plugin>
 				<groupId>org.rascalmpl</groupId>
 				<artifactId>rascal-maven-plugin</artifactId>
-				<version>0.30.0-RC18-SNAPSHOT</version>
+				<version>0.30.0-RC25</version>
                                 <configuration>
-                                    <enableStandardLibrary>false</enableStandardLibrary>
                                     <bin>${project.build.outputDirectory}</bin>
                                     <srcs>
                                         <src>${project.basedir}/src</src>
@@ -75,7 +74,6 @@
                                                     <goal>tutor</goal>
                                                 </goals>
                                                 <configuration>
-                                                    <enableStandardLibrary>true</enableStandardLibrary>
                                                     <errorsAsWarnings>false</errorsAsWarnings>
                                                     <bin>${project.build.outputDirectory}</bin>
                                                     <license>${project.basedir}/LICENSE.md</license>
@@ -86,8 +84,6 @@
                                                         <src>${project.basedir}/src</src>
                                                         <src>${project.basedir}/doc</src>
                                                     </srcs>
-                                                    <ignores>
-                                                    </ignores>
                                                 </configuration>
                                             </execution>
 				</executions>
@@ -144,7 +140,7 @@
 		<dependency>
 			<groupId>org.rascalmpl</groupId>
 			<artifactId>rascal</artifactId>
-			<version>0.41.0-RC35-SNAPSHOT</version>
+			<version>0.41.0-RC42</version>
 		</dependency>
 		<dependency>
 			<groupId>org.rascalmpl</groupId>
