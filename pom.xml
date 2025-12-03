@@ -45,7 +45,7 @@
 			<plugin>
 				<groupId>org.rascalmpl</groupId>
 				<artifactId>rascal-maven-plugin</artifactId>
-				<version>0.30.0-RC25</version>
+				<version>0.30.0</version>
                                 <configuration>
                                     <bin>${project.build.outputDirectory}</bin>
                                     <srcs>
@@ -140,7 +140,7 @@
 		<dependency>
 			<groupId>org.rascalmpl</groupId>
 			<artifactId>rascal</artifactId>
-			<version>0.41.0-RC42</version>
+			<version>0.41.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.rascalmpl</groupId>
