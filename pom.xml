@@ -69,7 +69,7 @@
                                             </execution>
                                             <execution>
                                                 <id>default-resources</id>
-                                                <phase>resources</phase>
+                                                <phase>compile</phase>
                                                 <goals>
                                                     <goal>tutor</goal>
                                                 </goals>
