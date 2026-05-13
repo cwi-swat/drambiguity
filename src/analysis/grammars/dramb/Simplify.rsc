@@ -33,7 +33,7 @@ Tree simplify(Tree t) {
           n = simplify(args[i]);
           
           if (n != args[i]) {
-            return appl(p, [*args[..i], n, *args[i+1..]])[@\loc=a@\loc]; 
+            return appl(p, [*args[..i], n, *args[i+1..]])[src=a.src]; 
           }
        }
    }
@@ -53,7 +53,7 @@ Tree simplify(Tree t) {
           return appl(r, args);
        }
 
-       return appl(r, args[..rand*delta] + args[min(rand*(delta+1), size(args))..])[@\loc=a@\loc];
+       return appl(r, args[..rand*delta] + args[min(rand*(delta+1), size(args))..])[src=a.src];
      }
    
      // remove elements from star separated lists
@@ -65,7 +65,7 @@ Tree simplify(Tree t) {
           return appl(r, []);
        }
 
-       return appl(r, args[..rand*delta] + args[min(rand*(delta+1), size(args))..])[@\loc=a@\loc];
+       return appl(r, args[..rand*delta] + args[min(rand*(delta+1), size(args))..])[src=a.src];
      }
      
      // removes elements from non-nullable lists
@@ -76,7 +76,7 @@ Tree simplify(Tree t) {
           return appl(r, [args[rand]]);
        }
 
-       return appl(r, args[..rand] + args[(rand+1)..])[@\loc=a@\loc];
+       return appl(r, args[..rand] + args[(rand+1)..])[src=a.src];
      }
      
      // removes elements from nullable lists
@@ -86,13 +86,13 @@ Tree simplify(Tree t) {
        }
 
        rand = arbInt(size(args));
-       return appl(r, args[..rand] + args[(rand+1)..])[@\loc=a@\loc];
+       return appl(r, args[..rand] + args[(rand+1)..])[src=a.src];
      }
      
      // removes optionals
      case a:appl(r:regular(\opt(_)),[_]) :
        if (arbBool()) { 
-         return appl(r, [])[@\loc=a@\loc];
+         return appl(r, [])[src=a.src];
        }
        else {
          fail;
@@ -127,7 +127,7 @@ Tree simplify(Tree t) {
           n = simplify(args[i]);
           
           if (n != args[i]) {
-            return appl(p, [*args[..i], n, *args[i+1..]])[@\loc=a@\loc]; 
+            return appl(p, [*args[..i], n, *args[i+1..]])[src=a.src]; 
           }
        }
      }

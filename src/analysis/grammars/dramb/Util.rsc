@@ -91,31 +91,31 @@ default bool isLiteral(Tree _) = false;
 //    };
 // }  
 
-Tree completeLocs(Tree t:amb({Tree u,*_})) = nt when u@\loc?, <nt, _> := completeLocs(t, u@\loc.top, 0);
-Tree completeLocs(Tree t:amb({Tree u,*_})) = nt when !(u@\loc?), <nt, _> := completeLocs(t, |unknown:///|(0,0), 0);
-default Tree completeLocs(Tree t) = nt when t@\loc?, <nt, _> := completeLocs(t, t@\loc.top, 0);
+Tree completeLocs(Tree t:amb({Tree u,*_})) = nt when u.src?, <nt, _> := completeLocs(t, u.src.top, 0);
+Tree completeLocs(Tree t:amb({Tree u,*_})) = nt when !(u.src?), <nt, _> := completeLocs(t, |unknown:///|(0,0), 0);
+default Tree completeLocs(Tree t) = nt when t.src?, <nt, _> := completeLocs(t, t.src.top, 0);
 
 tuple[Tree, int] completeLocs(Tree t, loc parent, int offset) {
   int s = offset;
   
   switch (t) {
-    case char(_) : return <t[@\loc=parent(offset, 1)], offset + 1>;
+    case char(_) : return <t[src=parent(offset, 1)], offset + 1>;
     case amb(_)  : {
       newAlts = for (Tree a <- t.alternatives) {
         <a, s> = completeLocs(a, parent, offset);
         append a;
       }
-      return <amb({*newAlts})[@\loc=parent(offset, s - offset)], s>;
+      return <amb({*newAlts})[src=parent(offset, s - offset)], s>;
     }
     case appl(p,_) : {
       newArgs = for (Tree a <- t.args) {
         <a, s> = completeLocs(a, parent, s);
         append a;
       }
-      return <appl(p,newArgs)[@\loc=t@\loc?parent(offset, s - offset)], s>;
+      return <appl(p,newArgs)[src=t.src ? parent(offset, s - offset)], s>;
     }
     case cycle(_, _) : {
-      return <t[@\loc=t@\loc?parent], offset>;
+      return <t[src=t.src ? parent], offset>;
     }
     default:
       throw "unexected kind of tree <t>";

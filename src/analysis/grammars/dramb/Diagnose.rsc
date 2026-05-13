@@ -166,7 +166,7 @@ alias Words = set[Word];
 void tokens(Tree x, Tree y) {
   bool isWord(Tree t)  = s is \lex || s is \lit || s is \cilit || s is \layouts when s := analysis::grammars::dramb::Util::symbol(t);
    
-  Words collect(Tree t) = {<n@\loc, symbol(n), "<n>"> | /n:appl(_,_) := t, isWord(n)};
+  Words collect(Tree t) = {<n.src, symbol(n), "<n>"> | /n:appl(_,_) := t, isWord(n)};
   
   Words wordsX = collect(x);
   Words wordsY = collect(y);
