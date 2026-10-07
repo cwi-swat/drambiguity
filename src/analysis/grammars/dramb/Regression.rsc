@@ -39,20 +39,21 @@ It's best to use IO::findResources to locate the binary file that stores your dr
 }
 bool testForParsingRegressions(type[&T <: Tree] newGrammar, loc oldModelLocation) {
     messages = runRegressionTests(newGrammar, oldModelLocation);
-
+    
     if (messages == []) {
         return true;
     }
-
     parseErrors = [m | m <- messages, m is error];
     ambiguities = [m | m <- messages, m is ambiguity];
     crashes = [m | m <- messages, m is crash];
-
-    println("The regression test failed with <if (parseErrors != []) {>
-            '   - <size(parseErrors)> new parse errors<}><if (ambiguities != []) {>
-            '   - <size(ambiguities)> new ambiguous sentences<}><if (crashes != []) {>
-            '   - <size(crashes)> new unexpected crashes<}>
-            '");
+    
+    println(
+        "The regression test failed with <if (parseErrors != []) {>
+        '   - <size(parseErrors)> new parse errors<}><if (ambiguities != []) {>
+        '   - <size(ambiguities)> new ambiguous sentences<}><if (crashes != []) {>
+        '   - <size(crashes)> new unexpected crashes<}>
+        '"
+    );
     
     return false;
 }
@@ -68,26 +69,28 @@ We collect the errors and return them as a list for later inspection. However, i
 ((drAmbiguity)) tool for diagnostics rather than studying this list.
 }
 list[ParsingRegression] runRegressionTests(type[&T <: Tree] newGrammar, Model m) {
-     return for (<str ex, Symbol s, Maybe[Tree] _t, str _st> <- m.examples) {
-      try {
-        print("parsing <ex> with <type(s, ())>...");
-        tt = reparse(newGrammar, s, ex);
-
-        if (/a:amb(_) := tt) {
-            println(" ambiguous!");
-            append ambiguity("<a>", symbol(a), a);
+    return
+        for (<str ex, Symbol s, Maybe[Tree] _t, str _st> <- m.examples) {
+            try {
+                print("parsing <ex> with <type(s, ())>...");
+                tt = reparse(newGrammar, s, ex);
+                
+                if (/a: amb(_) := tt) {
+                    println(" ambiguous!");
+                    append ambiguity("<a>", symbol(a), a);
+                }
+                else {
+                    println(" ok!");
+                }
+            }
+            catch ParseError(l): {
+                println(" parse error!");
+                append error(ex, s, l);
+            }
+            catch value v: {
+                println(" unexpected crash!");
+                append crash(ex, s, v);
+            }
         }
-        else {
-            println(" ok!");
-        }
-      }
-      catch ParseError(l) : {
-        println(" parse error!");
-        append error(ex, s, l);
-      }
-      catch value v: {
-        println(" unexpected crash!");
-        append crash(ex, s, v);
-      }  
-    };
+    ;
 }

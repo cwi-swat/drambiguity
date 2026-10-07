@@ -3,5 +3,4 @@ Project-Name: drambiguity
 Main-Function: main
 Main-Module: Plugin
 Source: src
-Require-Libraries: |lib://salix-core|,|lib://salix-contrib|
 
