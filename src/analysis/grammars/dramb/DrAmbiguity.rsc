@@ -2,35 +2,35 @@ module analysis::grammars::dramb::DrAmbiguity
 
 extend analysis::grammars::dramb::Model;
 
+import Boolean;
 import DateTime;
-import salix::Core;
-import salix::HTML;
-import salix::Node;
-import salix::Index;
-import salix::App;
-import salix::util::WithPopups;
-import salix::lib::Bootstrap;
-import lang::rascal::format::Grammar;
-import ParseTree;
+import Grammar;
 import IO;
 import List;
+import ParseTree;
 import Set;
 import String;
-import Boolean;
-import util::Math;
-import analysis::grammars::dramb::Simplify;
-import analysis::grammars::dramb::GenerateTrees;
-import analysis::grammars::dramb::Popups;
-import analysis::grammars::dramb::Detection;
-import util::Reflective;
-import analysis::grammars::dramb::Util;
-import Grammar;
-import analysis::grammars::dramb::Diagnose;
-import analysis::grammars::dramb::Brackets;
-import analysis::grammars::dramb::GrammarEditor;
-
-import util::Maybe;
 import ValueIO;
+import analysis::grammars::dramb::Brackets;
+import analysis::grammars::dramb::Detection;
+import analysis::grammars::dramb::Diagnose;
+import analysis::grammars::dramb::GenerateTrees;
+import analysis::grammars::dramb::GrammarEditor;
+import analysis::grammars::dramb::Popups;
+import analysis::grammars::dramb::Simplify;
+import analysis::grammars::dramb::Util;
+import lang::rascal::format::Grammar;
+import salix::App;
+import salix::Core;
+import salix::HTML;
+import salix::Index;
+import salix::Node;
+import salix::lib::Bootstrap;
+import salix::util::SaveLoad;
+import salix::util::WithPopups;
+import util::Math;
+import util::Maybe;
+import util::Reflective;
 import vis::Text;
 
 private loc root = |project://drambiguity/src|;
@@ -40,7 +40,7 @@ App[Model] drAmbiguity(type[&T <: Tree] grammar, loc input)
     = drAmbiguity(model(grammar, input = readFile(input)));
 
 @synopsis{Continue DrAmbiguity with a previously saved project}
-App[Model] drAmbiguity(loc project) = drAmbiguity(readBinaryValueFile(#Model, project));
+App[Model] drAmbiguity(loc project) = drAmbiguity(readTextValueFile(#Model, project));
 
 @synopsis{start DrAmbiguity with a fresh grammar and an example input sentence}
 App[Model] drAmbiguity(type[&T <: Tree] grammar, str input)
@@ -69,7 +69,7 @@ App[Model] drAmbiguity(Model m, str id = "DrAmbiguity")
                       "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
                   ]
               ),
-              update
+              withSaveLoad(#Model, update, filename="state", extension="dra")
           ),
           root
       );
@@ -94,6 +94,7 @@ data Msg
     | chars()
     | focus()
     | simplify()
+    | formatGrammar()
     | freshSentence()
     | newInput(str x)
     | selectExample(int count)
@@ -105,10 +106,6 @@ data Msg
     | setStartNonterminal(Symbol s)
     | clearErrors()
     | removeGrammar(int count)
-    | saveProject(loc file)
-    | loadProject(loc file)
-    | filename(loc file)
-    | nofilename()
     | commitMessage(str msg)
     | setTab(Tab t)
     ;
@@ -120,27 +117,19 @@ Model update(literals(), Model m) = m[literals = !m.literals];
 Model update(\layout(), Model m) = m[\layout = !m.\layout];
 Model update(Msg::chars(), Model m) = m[chars = !m.chars];
 Model update(Msg::focus(), Model m) = focus(m);
-Model update(Msg::filename(loc f), Model m) = m[file = just(f)];
-Model update(nofilename(), Model m) = m[file = nothing()];
 Model update(commitMessage(str msg), Model m) = m[commitMessage = msg];
 Model update(removeGrammar(int count), Model m)
     = m[grammarHistory = m.grammarHistory[0..count - 1] + m.grammarHistory[count..]];
 
-Model update(loadProject(loc f), Model m) {
+Model update(Msg::formatGrammar(), Model m) {
     try {
-        m = readBinaryValueFile(#Model, f);
-        m.errors = [];
+        m.grammarText = formatGrammar(m.grammarText);
+        return m;
+    } 
+    catch str e: {
+        m.errors += [e];
         return m;
     }
-    catch value x: {
-        m.errors += ["IO exception: <x>"];
-        return m;
-    }
-}
-
-Model update(saveProject(loc f), Model m) {
-    writeBinaryValueFile(f, m);
-    return m;
 }
 
 Model update(selectExample(int count), Model m) {
@@ -157,8 +146,10 @@ Model update(selectExample(int count), Model m) {
 
 Model update(removeExample(int count), Model m)
     = m[examples = m.examples[0..count - 1] + m.examples[count..]];
+
 Model update(changeGenerationEffort(int count), Model m)
     = m[generationEffort = count > 0 && count < 101 ? count : m.generationEffort];
+
 Model update(newGrammar(str x), Model m) {
     m.grammarText = x;
     return m;
@@ -357,7 +348,7 @@ void view(Model m) {
         div(( ) {
             ul(class("nav nav-pills"), id("tabs"), ( ){
                 li(class("nav-item dropdown"), id("file-menu"), ( ){
-                    a(
+                 a(
                         class("nav-link dropdown-toggle"),
                         \data-toggle("dropdown"),
                         role("button"),
@@ -365,7 +356,7 @@ void view(Model m) {
                         expanded(false),
                         "File"
                     );
-                    fileUI(m);
+                    fileUI();
                     });
                 
                 li(class("nav-item"), ( ){
@@ -484,6 +475,7 @@ void grammarPane(Model m) {
                 else {
                     button(class("btn-secondary disabled"), "Commit");
                 }
+                button(class("btn-secondary"), onClick(formatGrammar()), "Format");
                 });
             });
     });
@@ -530,49 +522,11 @@ Msg newAmountInput(str i) {
     return changeGenerationEffort(toInt(i));
 }
 
-Msg loadProjectInput(str file) {
-    if (/C:\\fakepath\\<name:.*>/ := file) {
-        return loadProject(|home:///| + name);
-    }
-    else {
-        return loadProject(|home:///| + file);
-    }
-}
-
-Msg onProjectNameInput(str f) {
-    if (trim(f) != "") {
-        return filename((|home:///| + f)[extension = "dra"]);
-    }
-    else {
-        return nofilename();
-    }
-}
-
-void fileUI(Model m) {
-    div(class("dropdown-menu"), labeledBy("nonterminalChoice"), ( ){
-        input(
-            class("dropdown-item"),
-            \type("text"),
-            onInput(onProjectNameInput),
-            \value(m.file != nothing() ? (m.file.val[extension = ""].path[1..]) : "")
-        );
-        
-        if (m.file != nothing()) {
-            button(class("dropdown-item"), onClick(saveProject(m.file.val)), "Save");
-        }
-        button(
-            class("dropdown-item"),
-            attr("onclick", "document.getElementById(\'loadProjectButton\').click();"),
-            "Load…"
-        );
-        input(
-            \type("file"),
-            attr("accept", ".dra"),
-            style(<"display", "none">),
-            id("loadProjectButton"),
-            onInput(loadProjectInput)
-        );
-        });
+void fileUI() {
+    div(class("dropdown-menu"), ( ){
+        loadButton(class("dropdown-item"), "Load...");
+        saveButton(class("dropdown-item"), "Save...");
+    });
 }
 
 void inputPane(Model m) {
