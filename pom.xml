@@ -30,7 +30,6 @@
 				</includes>
 			</resource>
 		</resources>
-		<testSourceDirectory>src</testSourceDirectory>
 
 		<plugins>
 			<plugin>
