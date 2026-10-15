@@ -1,4 +1,9 @@
 
+## version 0.4.0
+
+* Saving and loading to/from any file is now enabled via the new withSaveLoad feature of salix
+* Added "Format" button in the grammar pane to make grammars easily readable
+
 ## version 0.3.3, 0.3.4
 
 * This is a maintenance release to align with the latest Rascal versions.
