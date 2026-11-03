@@ -16,7 +16,7 @@ data Tab
 Model model(&T <: Tree input, type[Tree] grammar, Tab tab = sentence())
     = model(grammar, tab = tab)[tree = just(input)];
 
-Model model(loc saved) = readBinaryValueFile(#Model, saved);
+Model model(loc saved) = readTextValueFile(#Model, saved);
 
 data Model
     = model(

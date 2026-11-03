@@ -30,12 +30,11 @@ If this function returns `false` then it's time to run ((drAmbiguity)) interacti
 * Use this as a `test` function in your own syntax project, and run it during continuous integration testing. 
 
 :::info
-It's best to use IO::findResources to locate the binary file that stores your drAmbiguity model.
+It's best to use IO::findResources to locate the textual value file that stores your drAmbiguity model.
 :::
 }
 @pitfalls{
 * This function does not provide the diagnostics features of ((drAmbiguity)). It's better to use the interactive tool for that.
-* Storing binary files in git repositories is not recommended, but it is still the best way to keep a drAmbiguity model around.
 }
 bool testForParsingRegressions(type[&T <: Tree] newGrammar, loc oldModelLocation) {
     messages = runRegressionTests(newGrammar, oldModelLocation);
@@ -58,9 +57,12 @@ bool testForParsingRegressions(type[&T <: Tree] newGrammar, loc oldModelLocation
     return false;
 }
 
-@synopsis{Reads the old model from a binary file and then continues to run the regression tests.}
+@synopsis{Reads the old model from a textual value file and then continues to run the regression tests.}
+@description{
+Models are stored as textual values, because the save and load dialogs of salix-core, which ((drAmbiguity)) uses, read and write that format.
+}
 list[ParsingRegression] runRegressionTests(type[&T <: Tree] newGrammar, loc oldModelLocation)
-    = runRegressionTests(newGrammar, readBinaryValueFile(#Model, oldModelLocation));
+    = runRegressionTests(newGrammar, readTextValueFile(#Model, oldModelLocation));
 
 @synopsis{This is the workhorse that runs the regression tests; it simulates exactly what the interactive tool also does when a grammar is updated.}
 @description{
