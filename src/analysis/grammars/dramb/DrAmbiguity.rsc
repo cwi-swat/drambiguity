@@ -593,7 +593,7 @@ void inputPane(Model m) {
                     "Start: <format(m.grammar.symbol)>"
                 );
                 div(class("dropdown-menu"), labeledBy("nonterminalChoice"), ( ){
-                    for (Symbol x <- sorts(m.grammar)) {
+                    for (Symbol x <- sort(sorts(m.grammar))) {
                         button(class("list-group-item"), href("#"), onClick(setStartNonterminal(x)), "<format(x)>");
                     }
                     });
