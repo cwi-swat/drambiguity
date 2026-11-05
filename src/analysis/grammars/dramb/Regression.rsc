@@ -1,20 +1,22 @@
 @synopsis{Utility to run stored tests against a new grammar and report new issues}
 module analysis::grammars::dramb::Regression
 
-import analysis::grammars::dramb::Util;
-import analysis::grammars::dramb::Model;
-import ValueIO;
-import IO;
 import Exception;
-import util::Maybe;
-import ParseTree;
+import IO;
 import List;
+import ParseTree;
+import ValueIO;
+import analysis::grammars::dramb::Model;
+import analysis::grammars::dramb::Util;
+import util::Maybe;
+import util::Monitor;
 
 @synopsis{Models the bad things that can happen when we parse old strings with a new grammar}
 data ParsingRegression
     = error(str sentence, Symbol nonTerminal, loc src)
     | ambiguity(str sentence, Symbol nonTerminal, Tree cluster)
     | crash(str sentence, Symbol nonTerminal, value exception)
+    | ok(str sentence, Symbol nonTerminal)
     ;
 
 @synopsis{Run the stored regression test sentences against a new grammar}
@@ -38,7 +40,7 @@ It's best to use IO::findResources to locate the textual value file that stores 
 }
 bool testForParsingRegressions(type[&T <: Tree] newGrammar, loc oldModelLocation) {
     messages = runRegressionTests(newGrammar, oldModelLocation);
-    
+
     if (messages == []) {
         return true;
     }
@@ -70,29 +72,28 @@ By reparsing all the examples in the stored model we find out if there are new p
 We collect the errors and return them as a list for later inspection. However, it is recommended to use the interactive
 ((drAmbiguity)) tool for diagnostics rather than studying this list.
 }
-list[ParsingRegression] runRegressionTests(type[&T <: Tree] newGrammar, Model m) {
-    return
-        for (<str ex, Symbol s, Maybe[Tree] _t, str _st> <- m.examples) {
-            try {
-                print("parsing <ex> with <type(s, ())>...");
-                tt = reparse(newGrammar, s, ex);
-                
-                if (/a: amb(_) := tt) {
-                    println(" ambiguous!");
-                    append ambiguity("<a>", symbol(a), a);
-                }
-                else {
-                    println(" ok!");
-                }
-            }
-            catch ParseError(l): {
-                println(" parse error!");
-                append error(ex, s, l);
-            }
-            catch value v: {
-                println(" unexpected crash!");
-                append crash(ex, s, v);
+list[ParsingRegression] runRegressionTests(type[&T <: Tree] newGrammar, Model m, str label="Regression tests") {
+    results = loopJob(m.examples, ParsingRegression (<str ex, Symbol s, Maybe[Tree] _t, str _st>) {
+        try {
+            tt = reparse(newGrammar, s, ex);
+            
+            if (/a: amb(_) := tt) {
+                println("[ERROR] ambiguous <type(s, ())>: \n\t`<ex>`");
+                return ambiguity("<a>", symbol(a), a);
             }
         }
-    ;
+        catch ParseError(l): {
+            println("[ERROR] parse error for <type(s,())> at <l>:\n\t`<ex>`");
+            return error(ex, s, l);
+        }
+        catch value v: {
+            println("[ERROR] unexpected crash for <type(s,())> in:\n\t`<ex>`");
+            return crash(ex, s, v);
+        }
+
+        return ok(ex, s);
+    }, label=label);
+
+    // only the regressions are reported
+    return [r | r <- results, !(r is ok)];
 }
