@@ -38,8 +38,8 @@ It's best to use IO::findResources to locate the textual value file that stores 
 @pitfalls{
 * This function does not provide the diagnostics features of ((drAmbiguity)). It's better to use the interactive tool for that.
 }
-bool testForParsingRegressions(type[&T <: Tree] newGrammar, loc oldModelLocation) {
-    messages = runRegressionTests(newGrammar, oldModelLocation);
+bool testForParsingRegressions(type[&T <: Tree] newGrammar, loc oldModelLocation, str label="Regression testing <oldModelLocation>") {
+    messages = runRegressionTests(newGrammar, oldModelLocation, label=label);
 
     if (messages == []) {
         return true;
@@ -63,8 +63,8 @@ bool testForParsingRegressions(type[&T <: Tree] newGrammar, loc oldModelLocation
 @description{
 Models are stored as textual values, because the save and load dialogs of salix-core, which ((drAmbiguity)) uses, read and write that format.
 }
-list[ParsingRegression] runRegressionTests(type[&T <: Tree] newGrammar, loc oldModelLocation)
-    = runRegressionTests(newGrammar, readTextValueFile(#Model, oldModelLocation));
+list[ParsingRegression] runRegressionTests(type[&T <: Tree] newGrammar, loc oldModelLocation, str label="Regression testing <oldModelLocation>")
+    = runRegressionTests(newGrammar, readTextValueFile(#Model, oldModelLocation), label=label);
 
 @synopsis{This is the workhorse that runs the regression tests; it simulates exactly what the interactive tool also does when a grammar is updated.}
 @description{
@@ -72,7 +72,7 @@ By reparsing all the examples in the stored model we find out if there are new p
 We collect the errors and return them as a list for later inspection. However, it is recommended to use the interactive
 ((drAmbiguity)) tool for diagnostics rather than studying this list.
 }
-list[ParsingRegression] runRegressionTests(type[&T <: Tree] newGrammar, Model m, str label="Regression tests") {
+list[ParsingRegression] runRegressionTests(type[&T <: Tree] newGrammar, Model m, str label="Regression testing") {
     results = loopJob(m.examples, ParsingRegression (<str ex, Symbol s, Maybe[Tree] _t, str _st>) {
         try {
             tt = reparse(newGrammar, s, ex);
