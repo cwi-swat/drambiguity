@@ -466,7 +466,7 @@ str exceptAdvise(Tree x, set[Production] pY) {
       }
       else {
         result += "ADVISORY: provide a label for: 
-                  '  <format(apX[def = label(labelApX, apX.def)])>
+                  '  <format(apX[def = Symbol::label(labelApX, apX.def)])>
                   '";
       }
       
